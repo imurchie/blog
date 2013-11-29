@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Random Thoughts</title>
+  <title>Coupling - Random Thoughts</title>
   <meta name="author" content="Isaac Murchie">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://imurchie.github.io/blog">
+  <link rel="canonical" href="http://imurchie.github.io/blog/blog/2013/11/29/coupling">
   <link href="/blog/favicon.png" rel="icon">
   <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/blog/atom.xml" rel="alternate" title="Random Thoughts" type="application/atom+xml">
@@ -63,15 +63,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/blog/2013/11/29/coupling/">Coupling</a></h1>
+      <h1 class="entry-title">Coupling</h1>
     
     
       <p class="meta">
@@ -94,7 +91,7 @@
   </header>
 
 
-  <div class="entry-content"><p>One of the problems encountered in designing systems is keeping the <em>coupling</em> between components loose. That is, making each object only know as much about the others as it absolutely needs.</p>
+<div class="entry-content"><p>One of the problems encountered in designing systems is keeping the <em>coupling</em> between components loose. That is, making each object only know as much about the others as it absolutely needs.</p>
 
 <p>Jim Weirich gave a talk at the <em>Distill</em> conference on the topic of &ldquo;connascence,&rdquo; or the coming-into-being-together. His idea was that there are two related phenomena in software design: <em>coupling</em> and <em>coherence</em>.</p>
 
@@ -145,77 +142,16 @@ In all these cases, when the related elements are in different classes (and ofte
 
 <p>I&rsquo;ll just leave that out there for myself to think about.</p>
 </div>
-  
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2013/11/29/design/">Design</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
   
 
+<span class="byline author vcard">Posted by <span class="fn">Isaac Murchie</span></span>
 
-<time datetime="2013-11-29T09:00:15-08:00" pubdate data-updated="true">Nov 29<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Russ Olson, in his book <em>Design Patterns in Ruby</em> (an abridged &ldquo;Gang of Four&rdquo; book, with implementations in Ruby), he lays out the principles that underly his approach, and which mesh well with the curriculum:</p>
-
-<blockquote><p>For me, these ideas boil down to four points:
-1.  Separate out the things that change from those that stay the same.
-2.  Program to an interface, not an implementation.
-3.  Prefer composition over inheritance.
-4.  Delegate, delegate, delegate.
-To These, I would like to add one idea that is not really mentioned in _Design Patterns, but that guides much of my own approach to building programs:
-5.  You ain&rsquo;t gonna need it.</p></blockquote>
-
-<p>The first four are identical to the guiding principles of the &ldquo;Gang of Four.&rdquo; In order to make robust software systems the places where things change should be identifiable, and ideally minimized (particularly in their public interface, so making a change does not effect, domino-like, other parts of the system). This relates directly to the idea of an interface (not of the C++/Java sort): the public facing parts of the class (or other object) should be as stable as possible, and it is more important to keep them functioning correctly. The implementation matters less, and what implementation is used might be decided using other considerations (e.g., efficiency, stability, auditability).</p>
-
-<p>The third part of this is an interesting one, and the subject of a recent blog post by <a href="http://words.steveklabnik.com/">Steve Klabnik</a>, <a href="http://words.steveklabnik.com/beware-subclassing-ruby-core-classes">&ldquo;Beware subclassing Ruby core classes&rdquo;</a>. Ruby only supports single inheritance, so inheriting from one class precludes doing so with another class. However, the central problem of inheritance is the tight coupling that comes about between the class and its superclass. Change the parent and the functionality of the child is suspect.</p>
-
-<p>The fourth point is just passing the responsibility to something else. This is key to the idea of <em>D.R.Y</em> (&ldquo;Don&rsquo;t Repeat Yourself&rdquo;), since two elements that do the same thing can delegate to a third that actually does it.</p>
-
-<p>The final part of Olson&rsquo;s discussion is part of our curriculum directly: If it is not necessary at this time, don&rsquo;t build it. Speculation almost never gets it right. I&rsquo;m reminded of Cory Doctorow&rsquo;s position on science fiction writers:</p>
-
-<blockquote><p>&ldquo;I&rsquo;m of the opinion that science fiction writers suck at predicting the future. We mostly go around describing the present in futuristic clothes &ndash; (such as) Mary Shelley, Bill Gibson, and many others.&rdquo;
-<a href="http://3degree.ecu.edu.au/articles/1378">&ldquo;Where is my flying car&rdquo;</a></p></blockquote>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2013/11/28/ruby-symbols/">Ruby Symbols</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
@@ -227,42 +163,32 @@ To These, I would like to add one idea that is not really mentioned in _Design P
   
 
 
-<time datetime="2013-11-28T21:34:40-08:00" pubdate data-updated="true">Nov 28<span>th</span>, 2013</time>
-        
-      </p>
+<time datetime="2013-11-29T09:00:43-08:00" pubdate data-updated="true">Nov 29<span>th</span>, 2013</time>
+      
+
+
+    </p>
     
-  </header>
+      <div class="sharing">
+  
+  <a href="/blog//twitter.com/share" class="twitter-share-button" data-url="http://imurchie.github.io/blog/blog/2013/11/29/coupling/" data-via="" data-counturl="http://imurchie.github.io/blog/blog/2013/11/29/coupling/" >Tweet</a>
+  
+  
+  
+</div>
 
-
-  <div class="entry-content"><p>Ruby <code>Symbol</code>s are interesting things, conceptually straddling the line separating themselves from <code>String</code>s. They do not, however, have any content of their own. They are, basically, the logical endpoint of the <em>nominitive</em> case in case-based grammars.</p>
-
-<p>As we know from the Sanskrit grammarians,</p>
-
-<blockquote>
-  prātipadikārthaliṅgaparimāṇavacanamātre prathamā
-  (Pā. 2.3.46)
-</blockquote>
-
-
-<p>Which is to say, the &ldquo;first,&rdquo; or nominative, case is used in the sense of merely (<em>mātre</em>) the lexical meaning of the nominal base (<em>prātipadikārtha</em>), its gender (<em>liṅga</em>), its measure (<em>parimāṇa</em>), or its number (<em>vacana</em>)</p>
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/blog/2013/11/29/design/" title="Previous Post: Design">&laquo; Design</a>
+      
+      
+    </p>
+  </footer>
+</article>
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/blog/2013/11/28/ruby-symbols/">Read on &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -290,6 +216,7 @@ To These, I would like to add one idea that is not really mentioned in _Design P
 
   
 </aside>
+
 
     </div>
   </div>

@@ -4,7 +4,7 @@
   <title><![CDATA[Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-11-28T22:21:22-08:00</updated>
+  <updated>2013-11-29T09:02:04-08:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -12,6 +12,92 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Coupling]]></title>
+    <link href="http://imurchie.github.io/blog/blog/2013/11/29/coupling/"/>
+    <updated>2013-11-29T09:00:43-08:00</updated>
+    <id>http://imurchie.github.io/blog/blog/2013/11/29/coupling</id>
+    <content type="html"><![CDATA[<p>One of the problems encountered in designing systems is keeping the <em>coupling</em> between components loose. That is, making each object only know as much about the others as it absolutely needs.</p>
+
+<p>Jim Weirich gave a talk at the <em>Distill</em> conference on the topic of &ldquo;connascence,&rdquo; or the coming-into-being-together. His idea was that there are two related phenomena in software design: <em>coupling</em> and <em>coherence</em>.</p>
+
+<p><em>Coupling</em> occurs between two pieces of software (from separate systems talking to each other all the way down to two objects within the same program). If two elements <code>A</code> and <code>B</code> are <em>coupled</em>, changing <code>A</code> forces a change in <code>B</code>, and (likely) vice versa.</p>
+
+<p>The former is bad, linking two different elements together, which the latter is good, tying everything within a single element into a cohesive unit.</p>
+
+<p>The two nicely sum up the values inculcated in the curriculum, that classes ought to model one thing and one thing only, with all the state and behaviour being ordered toward that thing. The same principle applies to methods, which are short and do a single thing.</p>
+
+<p>On the other side of the design of classes and methods, which are coherent to the object being modelled, only those <em>currently</em> necessary should be exposed in the interface. Many methods that are in a class have no reason to be publicly available.</p>
+
+<p>Weirich enumerated nine types of connascence, depending on how the two elements are related:
+1.  Name: two elements refer to each other by name
+2.  Position: (e.g., ordering of arrays, parameter lists)
+3.  Meaning: must both agree on meaning of some data
+4.  Algorithm: two components agree on algorithms (e.g., checksums)
+5.  Type: agree on the type of elements
+6.  Execution: order of steps might be required
+7.  Timing: elements related by some time condition (e.g., race conditions, timeout, etc.)
+8.  Value: values related by constraints (e.g., three sides to a triangle)
+9.  Identity: sharing an object
+In all these cases, when the related elements are in different classes (and often within the same class), this is moving toward bad (though some are unavoidable&hellip; things need to be named and need to be referred to by those names). The first five are <em>static</em>, depending only on how they are declared and defined. The last four are dynamic, coming about in the running of the software.</p>
+
+<p>Some major sources of coupling include parameter lists that are more than 2&mdash;3 elements long,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>    <span class="k">def</span> <span class="nf">many_parametered_method</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">signup_date</span><span class="p">,</span> <span class="n">mothers_maiden_name</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Which is easily misused, and difficult to change. This is connascence of Name, Position, Meaning, and Type. However, changing this to an associative array makes it easier for callers to get things right,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="n">params</span> <span class="o">=</span> <span class="p">{})</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">method</span><span class="p">({</span> <span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;Isaac&quot;</span><span class="p">,</span> <span class="ss">date</span><span class="p">:</span> <span class="s2">&quot;18/9/13&quot;</span><span class="p">,</span> <span class="n">signup_date</span><span class="p">:</span> <span class="s2">&quot;18/9/13&quot;</span><span class="p">,</span> <span class="n">mothers_maiden_name</span><span class="p">:</span> <span class="s2">&quot;Something&quot;</span> <span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now the order doesn&rsquo;t matter, though we still have coupling of name (is it <code>name</code> or <code>fullname</code>).</p>
+
+<p>In a different realm, there is a similar concept called &ldquo;supervenience&rdquo;, such that:</p>
+
+<blockquote><p>&ldquo;A set of properties A supervenes upon another set B just in case no two things can differ with respect to A-properties without also differing with respect to their B-properties.&rdquo;
+<a href="http://plato.stanford.edu/entries/supervenience/"><em>Stanford Encyclopedia of Philosophy</em></a></p></blockquote>
+
+<p>I&rsquo;ll just leave that out there for myself to think about.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Design]]></title>
+    <link href="http://imurchie.github.io/blog/blog/2013/11/29/design/"/>
+    <updated>2013-11-29T09:00:15-08:00</updated>
+    <id>http://imurchie.github.io/blog/blog/2013/11/29/design</id>
+    <content type="html"><![CDATA[<p>Russ Olson, in his book <em>Design Patterns in Ruby</em> (an abridged &ldquo;Gang of Four&rdquo; book, with implementations in Ruby), he lays out the principles that underly his approach, and which mesh well with the curriculum:</p>
+
+<blockquote><p>For me, these ideas boil down to four points:
+1.  Separate out the things that change from those that stay the same.
+2.  Program to an interface, not an implementation.
+3.  Prefer composition over inheritance.
+4.  Delegate, delegate, delegate.
+To These, I would like to add one idea that is not really mentioned in _Design Patterns, but that guides much of my own approach to building programs:
+5.  You ain&rsquo;t gonna need it.</p></blockquote>
+
+<p>The first four are identical to the guiding principles of the &ldquo;Gang of Four.&rdquo; In order to make robust software systems the places where things change should be identifiable, and ideally minimized (particularly in their public interface, so making a change does not effect, domino-like, other parts of the system). This relates directly to the idea of an interface (not of the C++/Java sort): the public facing parts of the class (or other object) should be as stable as possible, and it is more important to keep them functioning correctly. The implementation matters less, and what implementation is used might be decided using other considerations (e.g., efficiency, stability, auditability).</p>
+
+<p>The third part of this is an interesting one, and the subject of a recent blog post by <a href="http://words.steveklabnik.com/">Steve Klabnik</a>, <a href="http://words.steveklabnik.com/beware-subclassing-ruby-core-classes">&ldquo;Beware subclassing Ruby core classes&rdquo;</a>. Ruby only supports single inheritance, so inheriting from one class precludes doing so with another class. However, the central problem of inheritance is the tight coupling that comes about between the class and its superclass. Change the parent and the functionality of the child is suspect.</p>
+
+<p>The fourth point is just passing the responsibility to something else. This is key to the idea of <em>D.R.Y</em> (&ldquo;Don&rsquo;t Repeat Yourself&rdquo;), since two elements that do the same thing can delegate to a third that actually does it.</p>
+
+<p>The final part of Olson&rsquo;s discussion is part of our curriculum directly: If it is not necessary at this time, don&rsquo;t build it. Speculation almost never gets it right. I&rsquo;m reminded of Cory Doctorow&rsquo;s position on science fiction writers:</p>
+
+<blockquote><p>&ldquo;I&rsquo;m of the opinion that science fiction writers suck at predicting the future. We mostly go around describing the present in futuristic clothes &ndash; (such as) Mary Shelley, Bill Gibson, and many others.&rdquo;
+<a href="http://3degree.ecu.edu.au/articles/1378">&ldquo;Where is my flying car&rdquo;</a></p></blockquote>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ruby Symbols]]></title>
