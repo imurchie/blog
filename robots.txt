@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://imurchie.github.io/sitemap.xml 
+Sitemap: http://imurchie.github.io/blog/sitemap.xml 
