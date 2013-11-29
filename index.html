@@ -99,100 +99,19 @@
 <p>As we know from the Sanskrit grammarians,</p>
 
 <blockquote>
-  prātipadikārthaliṅgaparimāṇavacanamātre prathamā (Pā. 2.3.46)
+  prātipadikārthaliṅgaparimāṇavacanamātre prathamā
+  (Pā. 2.3.46)
 </blockquote>
 
 
 <p>Which is to say, the &ldquo;first,&rdquo; or nominative, case is used in the sense of merely (<em>mātre</em>) the lexical meaning of the nominal base (<em>prātipadikārtha</em>), its gender (<em>liṅga</em>), its measure (<em>parimāṇa</em>), or its number (<em>vacana</em>)</p>
 
-<p>So the nominitive, in Sanskrit grammar, conveys most prominently (grammatical <em>dvandva_s functioning as ordered-by-preference) the bare meaning of the lexical stem. And this is what Ruby <code>Symbol</code>s do! They convey information only insofar as they are named usefully. Their main purpose is as&hellip; well&hellip; </em>symbols_.</p>
-
-<p>One thing of note is that within a Ruby interpretter, there is only ever <em>one</em> copy of any given <code>Symbol</code>. So checking for equality is fast, the equality being directly testable through the <code>Symbol</code>s identity.</p>
-
-<p>So, for instance, if we have a <code>Hash</code> object that has <code>String</code> keys,</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">person</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>  <span class="s2">&quot;name&quot;</span>    <span class="o">=&gt;</span> <span class="s2">&quot;Isaac&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="s2">&quot;tumblr&quot;</span>  <span class="o">=&gt;</span> <span class="s2">&quot;isaac-codes&quot;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>When we access an element from the <code>Hash</code>,</p>
-
-<pre><code>    name = person["name"]
-</code></pre>
-
-<p>The operation needs to check the keys for the <code>String</code> &ldquo;name&rdquo;, which means checking that the first letter is &ldquo;n&rdquo;, the second &ldquo;a&rdquo; etc. etc. ad nauseum.</p>
-
-<p>If, on the other hand, we use <code>Symbols</code> for the keys,</p>
-
-<pre><code>    person = {
-      name:   "Isaac",
-      tumblr: "isaac-codes"
-    }
-</code></pre>
-
-<p>When we access an element,</p>
-
-<pre><code>    name = person[:name]
-</code></pre>
-
-<p>The equality operation merely tests whether the two <code>Symbol</code>s occupy the same position in memory! The <em>C</em> code for the operation is simple,</p>
-
-<pre><code>    static VALUE
-    sym_equal(VALUE sym1, VALUE sym2) {
-      if (sym1 == sym2) return Qtrue;
-      return Qfalse;
-    }
-</code></pre>
-
-<p>We can see, therefore that comparison is O(1) for the <code>Symbol</code>!</p>
-
-<p>This simplicty, however, leads to one major potential problem in the use of <code>Symbol</code>s, as noted in the curriculum. Since <code>Symbol</code>s aren&rsquo;t referenced by anything, there is no indicator of their going &ldquo;out of scope,&rdquo; and so no possibility for the Garbage Collector to release them from memory. So every <code>Symbol</code> created in the course of running a Ruby script continues to exist in memory. They are, therefore, unsuitable for &ldquo;situations where you could have an unbounded number of unique
-symbol values&rdquo; (<a href="http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/164890">http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/164890</a>).</p>
-
-<p>The practical take-away of this is to manage well what is being converted into a symbol. Repeatedly used <code>Hash</code> keys, like those to the Rack/Rails <code>params</code> hash, are fine. But converting <em>ad hoc</em> <code>String</code>s into <code>Symbol</code>s is asking for problems on any non-trivial system.</p>
-
-<p>If, for instance, we took a user&rsquo;s name and converted it to a   <code>Symbol</code> for insertion into a <code>Hash</code>,</p>
-
-<pre><code>    users = {}
-    username = "Isaac"
-    users[username.to_sym] = "Present"
-</code></pre>
-
-<p>And we extend the system to handle a million users, the memory usage will balloon! To illustrate,</p>
-
-<pre><code>    irb(main):001:0&gt; `ps -o rss= -p #{Process.pid}`.to_i
-    =&gt; 19908
-    irb(main):002:0&gt; users = {}
-    =&gt; {}
-    irb(main):003:0&gt; 1_000_000.times do |i|
-    irb(main):004:1*   username = "user_#{i}"
-    irb(main):005:1&gt;   users[username.to_sym] = true
-    irb(main):006:1&gt;   end
-    =&gt; 1000000
-    irb(main):007:0&gt; `ps -o rss= -p #{Process.pid}`.to_i
-    =&gt; 259360
-    irb(main):008:0&gt; GC.start()
-    =&gt; nil
-    irb(main):009:0&gt; `ps -o rss= -p #{Process.pid}`.to_i
-    =&gt; 259804
-    irb(main):010:0&gt; users = nil
-    =&gt; nil
-    irb(main):011:0&gt; GC.start()
-    =&gt; nil
-    irb(main):012:0&gt; `ps -o rss= -p #{Process.pid}`.to_i
-    =&gt; 259828
-</code></pre>
-
-<p>Even after garbage collecting, there is no decrease in memory usage. (On a side note, there are issues within the field of garbage collection to be kept in mind. Particularly, it seems that no system is actually particularly likely to free any memory. See, for instance, <a href="http://stackoverflow.com/questions/1119134/how-do-malloc-and-free-work/5532547#5532547.">http://stackoverflow.com/questions/1119134/how-do-malloc-and-free-work/5532547#5532547.</a>)</p>
 </div>
   
+  
+    <footer>
+      <a rel="full-article" href="/blog/blog/2013/11/28/ruby-symbols/">Read on &rarr;</a>
+    </footer>
   
 
 
