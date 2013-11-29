@@ -101,6 +101,9 @@
 To These, I would like to add one idea that is not really mentioned in _Design Patterns, but that guides much of my own approach to building programs:
 5.  You ain&rsquo;t gonna need it.</p></blockquote>
 
+<!-- more -->
+
+
 <p>The first four are identical to the guiding principles of the &ldquo;Gang of Four.&rdquo; In order to make robust software systems the places where things change should be identifiable, and ideally minimized (particularly in their public interface, so making a change does not effect, domino-like, other parts of the system). This relates directly to the idea of an interface (not of the C++/Java sort): the public facing parts of the class (or other object) should be as stable as possible, and it is more important to keep them functioning correctly. The implementation matters less, and what implementation is used might be decided using other considerations (e.g., efficiency, stability, auditability).</p>
 
 <p>The third part of this is an interesting one, and the subject of a recent blog post by <a href="http://words.steveklabnik.com/">Steve Klabnik</a>, <a href="http://words.steveklabnik.com/beware-subclassing-ruby-core-classes">&ldquo;Beware subclassing Ruby core classes&rdquo;</a>. Ruby only supports single inheritance, so inheriting from one class precludes doing so with another class. However, the central problem of inheritance is the tight coupling that comes about between the class and its superclass. Change the parent and the functionality of the child is suspect.</p>
