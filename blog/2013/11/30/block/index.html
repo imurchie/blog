@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Random Thoughts</title>
+  <title>Blocks, Procs, Lambdas, Methods - Random Thoughts</title>
   <meta name="author" content="Isaac Murchie">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://imurchie.github.io/blog">
+  <link rel="canonical" href="http://imurchie.github.io/blog/blog/2013/11/30/block">
   <link href="/blog/favicon.png" rel="icon">
   <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/blog/atom.xml" rel="alternate" title="Random Thoughts" type="application/atom+xml">
@@ -63,15 +63,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/blog/2013/11/30/block/">Blocks, Procs, Lambdas, Methods</a></h1>
+      <h1 class="entry-title">Blocks, Procs, Lambdas, Methods</h1>
     
     
       <p class="meta">
@@ -94,7 +91,7 @@
   </header>
 
 
-  <div class="entry-content"><p>Ruby has a number of ways to create callable bits of code: blocks, procs, lambdas, and methods.</p>
+<div class="entry-content"><p>Ruby has a number of ways to create callable bits of code: blocks, procs, lambdas, and methods.</p>
 
 <p><em>Blocks</em></p>
 
@@ -356,94 +353,16 @@
 
 <p>In all, these objects (and non-objects, in the case of blocks) are part of the dynamicity of Ruby as a programming language. They are also one of the most interesting features of the language, importing as they do functional programming techniques to the object-oriented world.</p>
 </div>
-  
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2013/11/30/string-concatenation/">String Concatenation</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
   
 
+<span class="byline author vcard">Posted by <span class="fn">Isaac Murchie</span></span>
 
-<time datetime="2013-11-30T08:08:28-08:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>The literature says that <code>String#&lt;&lt;</code> is preferable to <code>String#+</code>. Why? One metric is speed. The following Ruby code snippet:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>    <span class="no">Benchmark</span><span class="o">.</span><span class="n">bm</span> <span class="k">do</span> <span class="o">|</span><span class="n">b</span><span class="o">|</span>
-</span><span class='line'>      <span class="n">b</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;+:  &quot;</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'>        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
-</span><span class='line'>        <span class="mi">100_000</span><span class="o">.</span><span class="n">times</span> <span class="p">{</span> <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;another&quot;</span> <span class="p">}</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>      <span class="n">b</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;: &quot;</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'>        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
-</span><span class='line'>        <span class="mi">100_000</span><span class="o">.</span><span class="n">times</span> <span class="p">{</span> <span class="n">string</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;another&quot;</span> <span class="p">}</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>    <span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Yields the following data:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>       <span class="n">user</span>     <span class="nb">system</span>      <span class="n">total</span>        <span class="n">real</span>
-</span><span class='line'>    <span class="o">+</span><span class="p">:</span>    <span class="mi">8</span><span class="o">.</span><span class="mi">960000</span>   <span class="mi">2</span><span class="o">.</span><span class="mi">750000</span>  <span class="mi">11</span><span class="o">.</span><span class="mi">710000</span> <span class="p">(</span> <span class="mi">11</span><span class="o">.</span><span class="mi">735344</span><span class="p">)</span>
-</span><span class='line'>    <span class="o">&lt;&lt;</span><span class="p">:</span>   <span class="mi">0</span><span class="o">.</span><span class="mo">020000</span>   <span class="mi">0</span><span class="o">.</span><span class="mo">000000</span>   <span class="mi">0</span><span class="o">.</span><span class="mo">020000</span> <span class="p">(</span>  <span class="mi">0</span><span class="o">.</span><span class="mo">01</span><span class="mi">9966</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>So it appears that concatenation with the <code>&lt;&lt;</code> method is much faster. (As a side note, <code>String#concat</code> and <code>String#&lt;&lt;</code> are aliases.)</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2013/11/30/debugging/">Debugging</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
@@ -455,174 +374,32 @@
   
 
 
-<time datetime="2013-11-30T08:01:53-08:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><blockquote><p>&ldquo;Everyone knows that debugging is twice as hard as writing a program in the first place. So if you’re as clever as you can be when you write it, how will you ever debug it?&rdquo;</p></blockquote>
-
-<p>— Brian Kernighan (Elements of Programming Style, Chapter 2).</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
+<time datetime="2013-11-30T08:14:45-08:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
       
-  <header>
+
+
+    </p>
     
-      <h1 class="entry-title"><a href="/blog/blog/2013/11/29/coupling/">Coupling</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
+      <div class="sharing">
   
-
-
-<time datetime="2013-11-29T09:00:43-08:00" pubdate data-updated="true">Nov 29<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>One of the problems encountered in designing systems is keeping the <em>coupling</em> between components loose. That is, making each object only know as much about the others as it absolutely needs.</p>
-
-<p>Jim Weirich gave a talk at the <em>Distill</em> conference on the topic of &ldquo;connascence,&rdquo; or the coming-into-being-together. His idea was that there are two related phenomena in software design: <em>coupling</em> and <em>coherence</em>.</p>
-
-<p><em>Coupling</em> occurs between two pieces of software (from separate systems talking to each other all the way down to two objects within the same program). If two elements <code>A</code> and <code>B</code> are <em>coupled</em>, changing <code>A</code> forces a change in <code>B</code>, and (likely) vice versa.</p>
-
+  <a href="/blog//twitter.com/share" class="twitter-share-button" data-url="http://imurchie.github.io/blog/blog/2013/11/30/block/" data-via="" data-counturl="http://imurchie.github.io/blog/blog/2013/11/30/block/" >Tweet</a>
+  
+  
+  
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/blog/2013/11/29/coupling/">Read on &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  
-    <article>
+    
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2013/11/29/design/">Design</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-29T09:00:15-08:00" pubdate data-updated="true">Nov 29<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Russ Olson, in his book <em>Design Patterns in Ruby</em> (an abridged &ldquo;Gang of Four&rdquo; book, with implementations in Ruby), he lays out the principles that underly his approach, and which mesh well with the curriculum:</p>
-
-<blockquote><p>For me, these ideas boil down to four points:
-1.  Separate out the things that change from those that stay the same.
-2.  Program to an interface, not an implementation.
-3.  Prefer composition over inheritance.
-4.  Delegate, delegate, delegate.
-To These, I would like to add one idea that is not really mentioned in _Design Patterns, but that guides much of my own approach to building programs:
-5.  You ain&rsquo;t gonna need it.</p></blockquote>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/blog/2013/11/29/design/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
+        <a class="basic-alignment left" href="/blog/blog/2013/11/30/string-concatenation/" title="Previous Post: String concatenation">&laquo; String concatenation</a>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2013/11/28/ruby-symbols/">Ruby Symbols</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-28T21:34:40-08:00" pubdate data-updated="true">Nov 28<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Ruby <code>Symbol</code>s are interesting things, conceptually straddling the line separating themselves from <code>String</code>s. They do not, however, have any content of their own. They are, basically, the logical endpoint of the <em>nominitive</em> case in case-based grammars.</p>
-
-<p>As we know from the Sanskrit grammarians,</p>
-
-<blockquote>
-  prātipadikārthaliṅgaparimāṇavacanamātre prathamā
-  (Pā. 2.3.46)
-</blockquote>
-
-
-<p>Which is to say, the &ldquo;first,&rdquo; or nominative, case is used in the sense of merely (<em>mātre</em>) the lexical meaning of the nominal base (<em>prātipadikārtha</em>), its gender (<em>liṅga</em>), its measure (<em>parimāṇa</em>), or its number (<em>vacana</em>)</p>
+      
+    </p>
+  </footer>
+</article>
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/blog/2013/11/28/ruby-symbols/">Read on &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -658,6 +435,7 @@ To These, I would like to add one idea that is not really mentioned in _Design P
 
   
 </aside>
+
 
     </div>
   </div>
