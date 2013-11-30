@@ -4,7 +4,7 @@
   <title><![CDATA[Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-11-30T08:02:57-08:00</updated>
+  <updated>2013-11-30T08:03:44-08:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -18,8 +18,9 @@
     <link href="http://imurchie.github.io/blog/blog/2013/11/30/debugging/"/>
     <updated>2013-11-30T08:01:53-08:00</updated>
     <id>http://imurchie.github.io/blog/blog/2013/11/30/debugging</id>
-    <content type="html"><![CDATA[<blockquote><p>&ldquo;Everyone knows that debugging is twice as hard as writing a program in the first place. So if you’re as clever as you can be when you write it, how will you ever debug it?&rdquo;
-— Brian Kernighan (Elements of Programming Style, Chapter 2).</p></blockquote>
+    <content type="html"><![CDATA[<blockquote><p>&ldquo;Everyone knows that debugging is twice as hard as writing a program in the first place. So if you’re as clever as you can be when you write it, how will you ever debug it?&rdquo;</p></blockquote>
+
+<p>— Brian Kernighan (Elements of Programming Style, Chapter 2).</p>
 ]]></content>
   </entry>
   
