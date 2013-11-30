@@ -4,7 +4,7 @@
   <title><![CDATA[Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-11-30T08:17:36-08:00</updated>
+  <updated>2013-11-30T08:18:32-08:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -19,6 +19,9 @@
     <updated>2013-11-30T08:14:45-08:00</updated>
     <id>http://imurchie.github.io/blog/blog/2013/11/30/block</id>
     <content type="html"><![CDATA[<p>Ruby has a number of ways to create callable bits of code: blocks, procs, lambdas, and methods.</p>
+
+<!-- more -->
+
 
 <p><em>Blocks</em></p>
 
