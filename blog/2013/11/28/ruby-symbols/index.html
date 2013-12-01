@@ -108,107 +108,75 @@
 
 <p>One thing of note is that within a Ruby interpretter, there is only ever <em>one</em> copy of any given <code>Symbol</code>. So checking for equality is fast, the equality being directly testable through the <code>Symbol</code>s identity.</p>
 
-<p>So, for instance, if we have a <code>Hash</code> object that has <code>String</code> keys,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line"><span class="n">person</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class="line">  <span class="s2">&quot;name&quot;</span>    <span class="o">=&gt;</span> <span class="s2">&quot;Isaac&quot;</span><span class="p">,</span>
-</span><span class="line">  <span class="s2">&quot;tumblr&quot;</span>  <span class="o">=&gt;</span> <span class="s2">&quot;isaac-codes&quot;</span>
-</span><span class="line"><span class="p">}</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-When we access an element from the <code>Hash</code>,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="nb">name</span> <span class="o">=</span> <span class="n">person</span><span class="o">[</span><span class="s2">&quot;name&quot;</span><span class="o">]</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-The operation needs to check the keys for the <code>String</code> “name”, which means checking that the first letter is “n”, the second “a” etc. etc. ad nauseum.</p>
+<p lang="ruby">So, for instance, if we have a <code>Hash</code> object that has <code>String</code> keys,
+~~~
+person = {
+  “name”    =&gt; “Isaac”,
+  “tumblr”  =&gt; “isaac-codes”
+}
+~~~</p>
+<p lang="ruby">When we access an element from the <code>Hash</code>,
+~~~
+        name = person[“name”]
+~~~</p>
+<p>The operation needs to check the keys for the <code>String</code> “name”, which means checking that the first letter is “n”, the second “a” etc. etc. ad nauseum.</p>
 
-<p>If, on the other hand, we use <code>Symbols</code> for the keys,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="n">person</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class="line">      <span class="nb">name</span><span class="p">:</span>   <span class="s2">&quot;Isaac&quot;</span><span class="p">,</span>
-</span><span class="line">      <span class="ss">tumblr</span><span class="p">:</span> <span class="s2">&quot;isaac-codes&quot;</span>
-</span><span class="line">    <span class="p">}</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-When we access an element,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="nb">name</span> <span class="o">=</span> <span class="n">person</span><span class="o">[</span><span class="ss">:name</span><span class="o">]</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-The equality operation merely tests whether the two <code>Symbol</code>s occupy the same position in memory! The <em>C</em> code for the operation is simple,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="cpp"><span class="line">    <span class="k">static</span> <span class="n">VALUE</span>
-</span><span class="line">    <span class="n">sym_equal</span><span class="p">(</span><span class="n">VALUE</span> <span class="n">sym1</span><span class="p">,</span> <span class="n">VALUE</span> <span class="n">sym2</span><span class="p">)</span> <span class="p">{</span>
-</span><span class="line">      <span class="k">if</span> <span class="p">(</span><span class="n">sym1</span> <span class="o">==</span> <span class="n">sym2</span><span class="p">)</span> <span class="k">return</span> <span class="n">Qtrue</span><span class="p">;</span>
-</span><span class="line">      <span class="k">return</span> <span class="n">Qfalse</span><span class="p">;</span>
-</span><span class="line">    <span class="p">}</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-We can see, therefore that comparison is O(1) for the <code>Symbol</code>!</p>
+<p lang="ruby">If, on the other hand, we use <code>Symbols</code> for the keys,
+~~~
+        person = {
+          name:   “Isaac”,
+          tumblr: “isaac-codes”
+        }
+~~~</p>
+<p lang="ruby">When we access an element,
+~~~
+        name = person[:name]
+~~~</p>
+<p lang="cpp">The equality operation merely tests whether the two <code>Symbol</code>s occupy the same position in memory! The <em>C</em> code for the operation is simple,
+~~~
+        static VALUE
+        sym_equal(VALUE sym1, VALUE sym2) {
+          if (sym1 == sym2) return Qtrue;
+          return Qfalse;
+        }
+~~~</p>
+<p>We can see, therefore that comparison is O(1) for the <code>Symbol</code>!</p>
 
 <p>This simplicty, however, leads to one major potential problem in the use of <code>Symbol</code>s, as noted in the curriculum. Since <code>Symbol</code>s aren’t referenced by anything, there is no indicator of their going “out of scope,” and so no possibility for the Garbage Collector to release them from memory. So every <code>Symbol</code> created in the course of running a Ruby script continues to exist in memory. They are, therefore, unsuitable for “situations where you could have an unbounded number of unique
 symbol values” (http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/164890).</p>
 
 <p>The practical take-away of this is to manage well what is being converted into a symbol. Repeatedly used <code>Hash</code> keys, like those to the Rack/Rails <code>params</code> hash, are fine. But converting <em>ad hoc</em> <code>String</code>s into <code>Symbol</code>s is asking for problems on any non-trivial system.</p>
 
-<p>If, for instance, we took a user’s name and converted it to a   <code>Symbol</code> for insertion into a <code>Hash</code>,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="n">users</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span class="line">    <span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;Isaac&quot;</span>
-</span><span class="line">    <span class="n">users</span><span class="o">[</span><span class="n">username</span><span class="o">.</span><span class="n">to_sym</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Present&quot;</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-And we extend the system to handle a million users, the memory usage will balloon! To illustrate,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">001</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="sb">`ps -o rss= -p </span><span class="si">#{</span><span class="no">Process</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="sb">`</span><span class="o">.</span><span class="n">to_i</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="mi">19908</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">002</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">users</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="p">{}</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">003</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">1_000_000</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">004</span><span class="p">:</span><span class="mi">1</span><span class="o">*</span>   <span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;user_</span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">005</span><span class="p">:</span><span class="mi">1</span><span class="o">&gt;</span>   <span class="n">users</span><span class="o">[</span><span class="n">username</span><span class="o">.</span><span class="n">to_sym</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">006</span><span class="p">:</span><span class="mi">1</span><span class="o">&gt;</span>   <span class="k">end</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="mi">1000000</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">007</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="sb">`ps -o rss= -p </span><span class="si">#{</span><span class="no">Process</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="sb">`</span><span class="o">.</span><span class="n">to_i</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="mi">259360</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">00</span><span class="mi">8</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">GC</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="kp">nil</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">00</span><span class="mi">9</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="sb">`ps -o rss= -p </span><span class="si">#{</span><span class="no">Process</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="sb">`</span><span class="o">.</span><span class="n">to_i</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="mi">259804</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">010</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">users</span> <span class="o">=</span> <span class="kp">nil</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="kp">nil</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">011</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">GC</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="kp">nil</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">012</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="sb">`ps -o rss= -p </span><span class="si">#{</span><span class="no">Process</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="sb">`</span><span class="o">.</span><span class="n">to_i</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="mi">259828</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
+<p lang="ruby">If, for instance, we took a user’s name and converted it to a   <code>Symbol</code> for insertion into a <code>Hash</code>,
+~~~
+        users = {}
+        username = “Isaac”
+        users[username.to_sym] = “Present”
+~~~</p>
+<p>And we extend the system to handle a million users, the memory usage will balloon! To illustrate,
+~~~
+        irb(main):001:0&gt; <code>ps -o rss= -p #{Process.pid}</code>.to_i
+        =&gt; 19908
+        irb(main):002:0&gt; users = {}
+        =&gt; {}
+        irb(main):003:0&gt; 1<em>000</em>000.times do |i|
+        irb(main):004:1*   username = “user_#{i}”
+        irb(main):005:1&gt;   users[username.to_sym] = true
+        irb(main):006:1&gt;   end
+        =&gt; 1000000
+        irb(main):007:0&gt; <code>ps -o rss= -p #{Process.pid}</code>.to_i
+        =&gt; 259360
+        irb(main):008:0&gt; GC.start()
+        =&gt; nil
+        irb(main):009:0&gt; <code>ps -o rss= -p #{Process.pid}</code>.to_i
+        =&gt; 259804
+        irb(main):010:0&gt; users = nil
+        =&gt; nil
+        irb(main):011:0&gt; GC.start()
+        =&gt; nil
+        irb(main):012:0&gt; <code>ps -o rss= -p #{Process.pid}</code>.to_i
+        =&gt; 259828
+~~~
 Even after garbage collecting, there is no decrease in memory usage. (On a side note, there are issues within the field of garbage collection to be kept in mind. Particularly, it seems that no system is actually particularly likely to free any memory. See, for instance, http://stackoverflow.com/questions/1119134/how-do-malloc-and-free-work/5532547#5532547.)</p>
 
 </div>

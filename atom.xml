@@ -4,7 +4,7 @@
   <title><![CDATA[Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-12-01T10:48:59-08:00</updated>
+  <updated>2013-12-01T11:03:57-08:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -78,151 +78,93 @@
 <p><em>Blocks</em></p>
 
 <p>Blocks are the oddball in that they are not objects. They are anonymous bits of code that get sent to methods to be used in some way. Left to their own decides they remain anonymous:
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="k">def</span> <span class="nf">block_caller</span>
-</span><span class="line">      <span class="k">yield</span>
-</span><span class="line">    <span class="k">end</span>
-</span><span class="line">
-</span><span class="line">    <span class="n">block_caller</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;in a block&quot;</span> <span class="p">}</span>
-</span><span class="line">    <span class="c1"># =&gt; in a block</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-Here there are no named references to the block sent in to <code>block_caller</code>, just the keyword <code>yield</code> which yields control to any block the method knows of. Outside the method there is no way to access the code in that block.</p>
+~~~
+        def block_caller
+          yield
+        end</p>
 
-<p>Blocks are probably the most common form of this sort of behaviour in Ruby. Within both the Ruby core and the standard library there are a miriad methods that use blocks to customize their own behaviour. So, sorting an <code>Array</code> will, on its own, be in ascending order of the. But it can take a block, the result of running of which will determine how the sorting occurs:
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">011</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">array</span> <span class="o">=</span> <span class="o">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="o">]</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="o">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="o">]</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">012</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">array</span><span class="o">.</span><span class="n">sort</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="o">]</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">013</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">array</span><span class="o">.</span><span class="n">sort</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">|</span> <span class="n">b</span> <span class="o">&lt;=&gt;</span> <span class="n">a</span> <span class="p">}</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="o">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">]</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-Tada!</p>
+<pre lang="ruby"><code>    block_caller { puts "in a block" }
+    # =&gt; in a block ~~~
+</code></pre>
+<p>Here there are no named references to the block sent in to <code>block_caller</code>, just the keyword <code>yield</code> which yields control to any block the method knows of. Outside the method there is no way to access the code in that block.</p>
+
+<p lang="ruby">Blocks are probably the most common form of this sort of behaviour in Ruby. Within both the Ruby core and the standard library there are a miriad methods that use blocks to customize their own behaviour. So, sorting an <code>Array</code> will, on its own, be in ascending order of the. But it can take a block, the result of running of which will determine how the sorting occurs:
+~~~
+        irb(main):011:0&gt; array = [3, 4, 2, 5, 1]
+        =&gt; [3, 4, 2, 5, 1]
+        irb(main):012:0&gt; array.sort
+        =&gt; [1, 2, 3, 4, 5]
+        irb(main):013:0&gt; array.sort { |a, b| b &lt;=&gt; a }
+        =&gt; [5, 4, 3, 2, 1]
+~~~</p>
+<p>Tada!</p>
 
 <p><em>Procs</em></p>
 
 <p><code>Proc</code>s act much like blocks, but are fullfledged objects, and can be referenced and manipulated like any other object. Moreover, blocks and <code>Proc</code>s can be interchanged while calling methods, using the <code>&amp;</code> keyword.
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-<span class="line-number">22</span>
-<span class="line-number">23</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="k">def</span> <span class="nf">block_caller</span>
-</span><span class="line">      <span class="k">yield</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
-</span><span class="line">    <span class="k">end</span>
-</span><span class="line">
-</span><span class="line">    <span class="k">def</span> <span class="nf">proc_block_caller</span><span class="p">(</span><span class="o">&amp;</span><span class="n">prc</span><span class="p">)</span>
-</span><span class="line">      <span class="n">prc</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
-</span><span class="line">    <span class="k">end</span>
-</span><span class="line">
-</span><span class="line">    <span class="k">def</span> <span class="nf">proc_caller</span><span class="p">(</span><span class="n">prc</span><span class="p">)</span>
-</span><span class="line">      <span class="n">prc</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
-</span><span class="line">    <span class="k">end</span>
-</span><span class="line">
-</span><span class="line">    <span class="n">prc</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span> <span class="o">|</span><span class="n">input</span><span class="o">|</span> <span class="nb">puts</span> <span class="n">input</span> <span class="p">}</span>
-</span><span class="line">    <span class="c1"># or: prc = proc { |input| puts input }</span>
-</span><span class="line">
-</span><span class="line">    <span class="n">block_caller</span><span class="p">(</span><span class="o">&amp;</span><span class="n">prc</span><span class="p">)</span>
-</span><span class="line">    <span class="c1"># =&gt; test</span>
-</span><span class="line">
-</span><span class="line">    <span class="n">proc_block_caller</span> <span class="p">{</span> <span class="o">|</span><span class="n">input</span><span class="o">|</span> <span class="nb">puts</span> <span class="n">input</span> <span class="p">}</span>
-</span><span class="line">    <span class="c1"># =&gt; test</span>
-</span><span class="line">
-</span><span class="line">    <span class="n">proc_caller</span><span class="p">(</span><span class="n">prc</span><span class="p">)</span>
-</span><span class="line">    <span class="c1"># =&gt; test</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-In the first, we send a <code>Proc</code> as a block to the method, then a block as a <code>proc</code>, and finally a <code>Proc</code> as a normal argument to the method. All three result in the same functionality.</p>
+~~~
+        def block_caller
+          yield(“test”)
+        end</p>
+
+<pre lang="ruby"><code>    def proc_block_caller(&amp;prc)
+      prc.call("test")
+    end
+
+    def proc_caller(prc)
+      prc.call("test")
+    end
+
+    prc = Proc.new { |input| puts input }
+    # or: prc = proc { |input| puts input }
+
+    block_caller(&amp;prc)
+    # =&gt; test
+
+    proc_block_caller { |input| puts input }
+    # =&gt; test
+
+    proc_caller(prc)
+    # =&gt; test ~~~
+</code></pre>
+<p>In the first, we send a <code>Proc</code> as a block to the method, then a block as a <code>proc</code>, and finally a <code>Proc</code> as a normal argument to the method. All three result in the same functionality.</p>
 
 <p>Further, both blocks and <code>Proc</code>s are allocated on the heap, and so any return statement executed within them will return <em>from the context in which they are called</em>, not just from themselves:
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="k">def</span> <span class="nf">yielding_method</span>
-</span><span class="line">      <span class="nb">puts</span> <span class="s2">&quot;yielding to block&quot;</span>
-</span><span class="line">      <span class="k">yield</span>
-</span><span class="line">      <span class="nb">puts</span> <span class="s2">&quot;yielded to block&quot;</span>
-</span><span class="line">    <span class="k">end</span>
-</span><span class="line">
-</span><span class="line">    <span class="n">yielding_method</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;in block&quot;</span> <span class="p">}</span>
-</span><span class="line">    <span class="c1"># =&gt; yielding to block</span>
-</span><span class="line">    <span class="c1"># =&gt; in block</span>
-</span><span class="line">    <span class="c1"># =&gt; yielded to block</span>
-</span><span class="line">
-</span><span class="line">    <span class="n">yielding_method</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;in block&quot;</span><span class="p">;</span> <span class="k">return</span> <span class="kp">true</span> <span class="p">}</span>
-</span><span class="line">    <span class="c1"># =&gt; yielding to block</span>
-</span><span class="line">    <span class="c1"># =&gt; in block</span>
-</span><span class="line">
-</span><span class="line">    <span class="c1"># in the default scope</span>
-</span><span class="line">    <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span> <span class="k">return</span> <span class="kp">true</span> <span class="p">}</span><span class="o">.</span><span class="n">call</span>
-</span><span class="line">    <span class="c1"># =&gt; LocalJumpError: unexpected return</span>
-</span><span class="line">    <span class="c1"># =&gt;    ...</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;</p>
+~~~
+        def yielding_method
+          puts “yielding to block”
+          yield
+          puts “yielded to block”
+        end</p>
+
+<pre lang="ruby"><code>    yielding_method { puts "in block" }
+    # =&gt; yielding to block
+    # =&gt; in block
+    # =&gt; yielded to block
+
+    yielding_method { puts "in block"; return true }
+    # =&gt; yielding to block
+    # =&gt; in block
+
+    # in the default scope
+    Proc.new { return true }.call
+    # =&gt; LocalJumpError: unexpected return
+    # =&gt;    ... ~~~
+</code></pre>
 
 <p>On the same lines, neither blocks nor <code>Proc</code>s do any checking of the arguments being passed in.
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="n">prc</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span> <span class="o">|</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="o">|</span> <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">arg1</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">, </span><span class="si">#{</span><span class="n">arg2</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
-</span><span class="line">    <span class="n">prc</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;first argument&quot;</span><span class="p">,</span> <span class="s2">&quot;second argument&quot;</span><span class="p">)</span>
-</span><span class="line">    <span class="c1"># =&gt; &quot;first argument&quot;, &quot;second argument&quot;</span>
-</span><span class="line">
-</span><span class="line">    <span class="n">prc</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;first argument&quot;</span><span class="p">)</span>
-</span><span class="line">    <span class="c1"># =&gt; &quot;first argument&quot;, nil</span>
-</span><span class="line">
-</span><span class="line">    <span class="n">prc</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;first argument&quot;</span><span class="p">,</span> <span class="s2">&quot;second argument&quot;</span><span class="p">,</span> <span class="s2">&quot;third argument&quot;</span><span class="p">)</span>
-</span><span class="line">    <span class="c1"># =&gt; &quot;first argument&quot;, &quot;second argument&quot;</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-See <code>Lambda</code> below for more details, and a contrastive view.</p>
+~~~
+        prc = Proc.new { |arg1, arg2| puts “#{arg1.inspect}, #{arg2.inspect}” }
+        prc.call(“first argument”, “second argument”)
+        # =&gt; “first argument”, “second argument”</p>
+
+<pre lang="ruby"><code>    prc.call("first argument")
+    # =&gt; "first argument", nil
+
+    prc.call("first argument", "second argument", "third argument")
+    # =&gt; "first argument", "second argument" ~~~
+</code></pre>
+<p>See <code>Lambda</code> below for more details, and a contrastive view.</p>
 
 <p><em>Lambdas</em></p>
 
@@ -230,83 +172,60 @@ See <code>Lambda</code> below for more details, and a contrastive view.</p>
 
 <p>In Ruby, Lambdas behave like methods in ways that blocks and procs don’t. The two most important aspects of this functionality are</p>
 
-<ol>
-  <li>Stack memory vs. heap memory: Like full-fledged methods, Lambdas get space allocated on the call stack, rather than in the heap. In normal operation, this manifests itself in the ability of Lambdas to make explicit returns with method-like results.
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span></figure></notextile></li>
+<ol lang="ruby">
+  <li>
+    <p>Stack memory vs. heap memory: Like full-fledged methods, Lambdas get space allocated on the call stack, rather than in the heap. In normal operation, this manifests itself in the ability of Lambdas to make explicit returns with method-like results.
+~~~
+        def yielding_method
+          puts “yielding to block”
+          yield
+          puts “yielded to block”
+        end</p>
+
+    <pre><code>    l = lambda { puts "in lambda"; return true }
+    # or: l = -&gt; { ... }
+
+    yielding_method &amp;l
+    # =&gt; yielding to block
+    # =&gt; in lambda
+    # =&gt; yielded to block ~~~
+</code></pre>
+  </li>
 </ol>
-<p>&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">        <span class="k">def</span> <span class="nf">yielding_method</span>
-</span><span class="line">          <span class="nb">puts</span> <span class="s2">&quot;yielding to block&quot;</span>
-</span><span class="line">          <span class="k">yield</span>
-</span><span class="line">          <span class="nb">puts</span> <span class="s2">&quot;yielded to block&quot;</span>
-</span><span class="line">        <span class="k">end</span>
-</span><span class="line">
-</span><span class="line">        <span class="n">l</span> <span class="o">=</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;in lambda&quot;</span><span class="p">;</span> <span class="k">return</span> <span class="kp">true</span> <span class="p">}</span>
-</span><span class="line">        <span class="c1"># or: l = -&gt; { ... }</span>
-</span><span class="line">
-</span><span class="line">        <span class="n">yielding_method</span> <span class="o">&amp;</span><span class="n">l</span>
-</span><span class="line">        <span class="c1"># =&gt; yielding to block</span>
-</span><span class="line">        <span class="c1"># =&gt; in lambda</span>
-</span><span class="line">        <span class="c1"># =&gt; yielded to block</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/notextile&gt;&lt;/div&gt;
-2.  Arity checking: Also like full-fledged methods, lambdas get checked to make sure the arguments are of the necessary types, given the parameter list.
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">        <span class="n">l</span> <span class="o">=</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="o">|</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="o">|</span> <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">arg1</span><span class="si">}</span><span class="s2">, </span><span class="si">#{</span><span class="n">arg2</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
-</span><span class="line">        <span class="n">l</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;first argument&quot;</span><span class="p">,</span> <span class="s2">&quot;second argument&quot;</span><span class="p">)</span>
-</span><span class="line">        <span class="c1"># =&gt; first argument, second argument</span>
-</span><span class="line">
-</span><span class="line">        <span class="n">l</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;first argument&quot;</span><span class="p">)</span>
-</span><span class="line">        <span class="c1"># -&gt; ArgumentError: wrong number of arguments (1 for 2)</span>
-</span><span class="line">        <span class="c1"># -&gt;     ...</span>
-</span><span class="line">
-</span><span class="line">        <span class="n">l</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;first argument&quot;</span><span class="p">,</span> <span class="s2">&quot;second argument&quot;</span><span class="p">,</span> <span class="s2">&quot;third argument&quot;</span><span class="p">)</span>
-</span><span class="line">        <span class="c1"># -&gt; ArgumentError: wrong number of arguments (3 for 2)</span>
-</span><span class="line">        <span class="c1"># -&gt;     ...</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-<code>Lambda</code>s are, however, much less commonly used in Ruby development.</p>
+<ol lang="ruby">
+  <li>
+    <p>Arity checking: Also like full-fledged methods, lambdas get checked to make sure the arguments are of the necessary types, given the parameter list.
+~~~
+        l = lambda { |arg1, arg2| puts “#{arg1}, #{arg2}” }
+        l.call(“first argument”, “second argument”)
+        # =&gt; first argument, second argument</p>
+
+    <pre><code>    l.call("first argument")
+    # -&gt; ArgumentError: wrong number of arguments (1 for 2)
+    # -&gt;     ...
+
+    l.call("first argument", "second argument", "third argument")
+    # -&gt; ArgumentError: wrong number of arguments (3 for 2)
+    # -&gt;     ... ~~~
+</code></pre>
+  </li>
+</ol>
+<p><code>Lambda</code>s are, however, much less commonly used in Ruby development.</p>
 
 <p><em>Methods</em></p>
 
 <p>The last type of callable object is the <code>Method</code>. Normally, methods are of a different sort than blocks, <code>Proc</code>s, or <code>Lambda</code>s, since they are tied to classes (even in the case of singleton methods, which are part of a singleton (or “eigen-“) class). But they can be freed from a class and passed as a callable object in their own right. Calling the <code>Object#method</code> method returns a <code>Method</code> object that can be passed around and used much like a <code>Proc</code>.
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="n">meth</span> <span class="o">=</span> <span class="s2">&quot;a lowercase string&quot;</span><span class="o">.</span><span class="n">method</span><span class="p">(</span><span class="ss">:upcase</span><span class="p">)</span>
-</span><span class="line">    <span class="n">meth</span><span class="o">.</span><span class="n">call</span>
-</span><span class="line">    <span class="c1"># =&gt; A LOWERCASE STRING</span>
-</span><span class="line">
-</span><span class="line">    <span class="c1"># a Proc can be obtained from a Method</span>
-</span><span class="line">    <span class="n">prc</span> <span class="o">=</span> <span class="n">meth</span><span class="o">.</span><span class="n">to_proc</span>
-</span><span class="line">    <span class="n">prc</span><span class="o">.</span><span class="n">call</span>
-</span><span class="line">    <span class="c1"># =&gt; A LOWERCASE STRING</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-In all, these objects (and non-objects, in the case of blocks) are part of the dynamicity of Ruby as a programming language. They are also one of the most interesting features of the language, importing as they do functional programming techniques to the object-oriented world.</p>
+~~~
+        meth = “a lowercase string”.method(:upcase)
+        meth.call
+        # =&gt; A LOWERCASE STRING</p>
+
+<pre lang="ruby"><code>    # a Proc can be obtained from a Method
+    prc = meth.to_proc
+    prc.call
+    # =&gt; A LOWERCASE STRING ~~~
+</code></pre>
+<p>In all, these objects (and non-objects, in the case of blocks) are part of the dynamicity of Ruby as a programming language. They are also one of the most interesting features of the language, importing as they do functional programming techniques to the object-oriented world.</p>
 
 ]]></content>
   </entry>
@@ -316,36 +235,25 @@ In all, these objects (and non-objects, in the case of blocks) are part of the d
     <link href="http://imurchie.github.io/blog/blog/2013/11/30/string-concatenation/"/>
     <updated>2013-11-30T08:08:28-08:00</updated>
     <id>http://imurchie.github.io/blog/blog/2013/11/30/string-concatenation</id>
-    <content type="html"><![CDATA[<p>The literature says that <code>String#&lt;&lt;</code> is preferable to <code>String#+</code>. Why? One metric is speed. The following Ruby code snippet:
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="no">Benchmark</span><span class="o">.</span><span class="n">bm</span> <span class="k">do</span> <span class="o">|</span><span class="n">b</span><span class="o">|</span>
-</span><span class="line">      <span class="n">b</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;+:  &quot;</span><span class="p">)</span> <span class="k">do</span>
-</span><span class="line">        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
-</span><span class="line">        <span class="mi">100_000</span><span class="o">.</span><span class="n">times</span> <span class="p">{</span> <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;another&quot;</span> <span class="p">}</span>
-</span><span class="line">      <span class="k">end</span>
-</span><span class="line">      <span class="n">b</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;: &quot;</span><span class="p">)</span> <span class="k">do</span>
-</span><span class="line">        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
-</span><span class="line">        <span class="mi">100_000</span><span class="o">.</span><span class="n">times</span> <span class="p">{</span> <span class="n">string</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;another&quot;</span> <span class="p">}</span>
-</span><span class="line">      <span class="k">end</span>
-</span><span class="line">    <span class="k">end</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-Yields the following data:
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">       <span class="n">user</span>     <span class="nb">system</span>      <span class="n">total</span>        <span class="n">real</span>
-</span><span class="line">    <span class="o">+</span><span class="p">:</span>    <span class="mi">8</span><span class="o">.</span><span class="mi">960000</span>   <span class="mi">2</span><span class="o">.</span><span class="mi">750000</span>  <span class="mi">11</span><span class="o">.</span><span class="mi">710000</span> <span class="p">(</span> <span class="mi">11</span><span class="o">.</span><span class="mi">735344</span><span class="p">)</span>
-</span><span class="line">    <span class="o">&lt;&lt;</span><span class="p">:</span>   <span class="mi">0</span><span class="o">.</span><span class="mo">020000</span>   <span class="mi">0</span><span class="o">.</span><span class="mo">000000</span>   <span class="mi">0</span><span class="o">.</span><span class="mo">020000</span> <span class="p">(</span>  <span class="mi">0</span><span class="o">.</span><span class="mo">01</span><span class="mi">9966</span><span class="p">)</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
+    <content type="html"><![CDATA[<p lang="ruby">The literature says that <code>String#&lt;&lt;</code> is preferable to <code>String#+</code>. Why? One metric is speed. The following Ruby code snippet:
+~~~
+        Benchmark.bm do |b|
+          b.report(“+:  “) do
+            string = “test”
+            100<em>000.times { string += “another” }
+          end
+          b.report(“«: “) do
+            string = “test”
+            100</em>000.times { string « “another” }
+          end
+        end
+~~~</p>
+<p>Yields the following data:
+~~~
+           user     system      total        real
+        +:    8.960000   2.750000  11.710000 ( 11.735344)
+        «:   0.020000   0.000000   0.020000 (  0.019966)
+~~~
 So it appears that concatenation with the <code>&lt;&lt;</code> method is much faster. (As a side note, <code>String#concat</code> and <code>String#&lt;&lt;</code> are aliases.)</p>
 ]]></content>
   </entry>
@@ -394,19 +302,17 @@ So it appears that concatenation with the <code>&lt;&lt;</code> method is much f
 9.  Identity: sharing an object
 In all these cases, when the related elements are in different classes (and often within the same class), this is moving toward bad (though some are unavoidable… things need to be named and need to be referred to by those names). The first five are <em>static</em>, depending only on how they are declared and defined. The last four are dynamic, coming about in the running of the software.</p>
 
-<p>Some major sources of coupling include parameter lists that are more than 2–3 elements long,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="k">def</span> <span class="nf">many_parametered_method</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">signup_date</span><span class="p">,</span> <span class="n">mothers_maiden_name</span><span class="p">)</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-Which is easily misused, and difficult to change. This is connascence of Name, Position, Meaning, and Type. However, changing this to an associative array makes it easier for callers to get things right,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="n">params</span> <span class="o">=</span> <span class="p">{})</span>
-</span><span class="line">
-</span><span class="line">    <span class="nb">method</span><span class="p">({</span> <span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;Isaac&quot;</span><span class="p">,</span> <span class="ss">date</span><span class="p">:</span> <span class="s2">&quot;18/9/13&quot;</span><span class="p">,</span> <span class="n">signup_date</span><span class="p">:</span> <span class="s2">&quot;18/9/13&quot;</span><span class="p">,</span> <span class="n">mothers_maiden_name</span><span class="p">:</span> <span class="s2">&quot;Something&quot;</span> <span class="p">})</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-Now the order doesn’t matter, though we still have coupling of name (is it <code>name</code> or <code>fullname</code>).</p>
+<p lang="ruby">Some major sources of coupling include parameter lists that are more than 2–3 elements long,
+~~~
+        def many_parametered_method(name, date, signup_date, mothers_maiden_name)
+~~~</p>
+<p>Which is easily misused, and difficult to change. This is connascence of Name, Position, Meaning, and Type. However, changing this to an associative array makes it easier for callers to get things right,
+~~~
+        def method(params = {})</p>
+
+<pre lang="ruby"><code>    method({ name: "Isaac", date: "18/9/13", signup_date: "18/9/13", mothers_maiden_name: "Something" }) ~~~
+</code></pre>
+<p>Now the order doesn’t matter, though we still have coupling of name (is it <code>name</code> or <code>fullname</code>).</p>
 
 <p>In a different realm, there is a similar concept called “supervenience”, such that:</p>
 
@@ -473,107 +379,75 @@ To These, I would like to add one idea that is not really mentioned in _Design P
 
 <p>One thing of note is that within a Ruby interpretter, there is only ever <em>one</em> copy of any given <code>Symbol</code>. So checking for equality is fast, the equality being directly testable through the <code>Symbol</code>s identity.</p>
 
-<p>So, for instance, if we have a <code>Hash</code> object that has <code>String</code> keys,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line"><span class="n">person</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class="line">  <span class="s2">&quot;name&quot;</span>    <span class="o">=&gt;</span> <span class="s2">&quot;Isaac&quot;</span><span class="p">,</span>
-</span><span class="line">  <span class="s2">&quot;tumblr&quot;</span>  <span class="o">=&gt;</span> <span class="s2">&quot;isaac-codes&quot;</span>
-</span><span class="line"><span class="p">}</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-When we access an element from the <code>Hash</code>,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="nb">name</span> <span class="o">=</span> <span class="n">person</span><span class="o">[</span><span class="s2">&quot;name&quot;</span><span class="o">]</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-The operation needs to check the keys for the <code>String</code> “name”, which means checking that the first letter is “n”, the second “a” etc. etc. ad nauseum.</p>
+<p lang="ruby">So, for instance, if we have a <code>Hash</code> object that has <code>String</code> keys,
+~~~
+person = {
+  “name”    =&gt; “Isaac”,
+  “tumblr”  =&gt; “isaac-codes”
+}
+~~~</p>
+<p lang="ruby">When we access an element from the <code>Hash</code>,
+~~~
+        name = person[“name”]
+~~~</p>
+<p>The operation needs to check the keys for the <code>String</code> “name”, which means checking that the first letter is “n”, the second “a” etc. etc. ad nauseum.</p>
 
-<p>If, on the other hand, we use <code>Symbols</code> for the keys,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="n">person</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class="line">      <span class="nb">name</span><span class="p">:</span>   <span class="s2">&quot;Isaac&quot;</span><span class="p">,</span>
-</span><span class="line">      <span class="ss">tumblr</span><span class="p">:</span> <span class="s2">&quot;isaac-codes&quot;</span>
-</span><span class="line">    <span class="p">}</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-When we access an element,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="nb">name</span> <span class="o">=</span> <span class="n">person</span><span class="o">[</span><span class="ss">:name</span><span class="o">]</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-The equality operation merely tests whether the two <code>Symbol</code>s occupy the same position in memory! The <em>C</em> code for the operation is simple,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="cpp"><span class="line">    <span class="k">static</span> <span class="n">VALUE</span>
-</span><span class="line">    <span class="n">sym_equal</span><span class="p">(</span><span class="n">VALUE</span> <span class="n">sym1</span><span class="p">,</span> <span class="n">VALUE</span> <span class="n">sym2</span><span class="p">)</span> <span class="p">{</span>
-</span><span class="line">      <span class="k">if</span> <span class="p">(</span><span class="n">sym1</span> <span class="o">==</span> <span class="n">sym2</span><span class="p">)</span> <span class="k">return</span> <span class="n">Qtrue</span><span class="p">;</span>
-</span><span class="line">      <span class="k">return</span> <span class="n">Qfalse</span><span class="p">;</span>
-</span><span class="line">    <span class="p">}</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-We can see, therefore that comparison is O(1) for the <code>Symbol</code>!</p>
+<p lang="ruby">If, on the other hand, we use <code>Symbols</code> for the keys,
+~~~
+        person = {
+          name:   “Isaac”,
+          tumblr: “isaac-codes”
+        }
+~~~</p>
+<p lang="ruby">When we access an element,
+~~~
+        name = person[:name]
+~~~</p>
+<p lang="cpp">The equality operation merely tests whether the two <code>Symbol</code>s occupy the same position in memory! The <em>C</em> code for the operation is simple,
+~~~
+        static VALUE
+        sym_equal(VALUE sym1, VALUE sym2) {
+          if (sym1 == sym2) return Qtrue;
+          return Qfalse;
+        }
+~~~</p>
+<p>We can see, therefore that comparison is O(1) for the <code>Symbol</code>!</p>
 
 <p>This simplicty, however, leads to one major potential problem in the use of <code>Symbol</code>s, as noted in the curriculum. Since <code>Symbol</code>s aren’t referenced by anything, there is no indicator of their going “out of scope,” and so no possibility for the Garbage Collector to release them from memory. So every <code>Symbol</code> created in the course of running a Ruby script continues to exist in memory. They are, therefore, unsuitable for “situations where you could have an unbounded number of unique
 symbol values” (http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/164890).</p>
 
 <p>The practical take-away of this is to manage well what is being converted into a symbol. Repeatedly used <code>Hash</code> keys, like those to the Rack/Rails <code>params</code> hash, are fine. But converting <em>ad hoc</em> <code>String</code>s into <code>Symbol</code>s is asking for problems on any non-trivial system.</p>
 
-<p>If, for instance, we took a user’s name and converted it to a   <code>Symbol</code> for insertion into a <code>Hash</code>,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="n">users</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span class="line">    <span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;Isaac&quot;</span>
-</span><span class="line">    <span class="n">users</span><span class="o">[</span><span class="n">username</span><span class="o">.</span><span class="n">to_sym</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Present&quot;</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-And we extend the system to handle a million users, the memory usage will balloon! To illustrate,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">001</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="sb">`ps -o rss= -p </span><span class="si">#{</span><span class="no">Process</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="sb">`</span><span class="o">.</span><span class="n">to_i</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="mi">19908</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">002</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">users</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="p">{}</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">003</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="mi">1_000_000</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">004</span><span class="p">:</span><span class="mi">1</span><span class="o">*</span>   <span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;user_</span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">005</span><span class="p">:</span><span class="mi">1</span><span class="o">&gt;</span>   <span class="n">users</span><span class="o">[</span><span class="n">username</span><span class="o">.</span><span class="n">to_sym</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">006</span><span class="p">:</span><span class="mi">1</span><span class="o">&gt;</span>   <span class="k">end</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="mi">1000000</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">007</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="sb">`ps -o rss= -p </span><span class="si">#{</span><span class="no">Process</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="sb">`</span><span class="o">.</span><span class="n">to_i</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="mi">259360</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">00</span><span class="mi">8</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">GC</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="kp">nil</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">00</span><span class="mi">9</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="sb">`ps -o rss= -p </span><span class="si">#{</span><span class="no">Process</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="sb">`</span><span class="o">.</span><span class="n">to_i</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="mi">259804</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">010</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">users</span> <span class="o">=</span> <span class="kp">nil</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="kp">nil</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">011</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">GC</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="kp">nil</span>
-</span><span class="line">    <span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">012</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="sb">`ps -o rss= -p </span><span class="si">#{</span><span class="no">Process</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="sb">`</span><span class="o">.</span><span class="n">to_i</span>
-</span><span class="line">    <span class="o">=&gt;</span> <span class="mi">259828</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
+<p lang="ruby">If, for instance, we took a user’s name and converted it to a   <code>Symbol</code> for insertion into a <code>Hash</code>,
+~~~
+        users = {}
+        username = “Isaac”
+        users[username.to_sym] = “Present”
+~~~</p>
+<p>And we extend the system to handle a million users, the memory usage will balloon! To illustrate,
+~~~
+        irb(main):001:0&gt; <code>ps -o rss= -p #{Process.pid}</code>.to_i
+        =&gt; 19908
+        irb(main):002:0&gt; users = {}
+        =&gt; {}
+        irb(main):003:0&gt; 1<em>000</em>000.times do |i|
+        irb(main):004:1*   username = “user_#{i}”
+        irb(main):005:1&gt;   users[username.to_sym] = true
+        irb(main):006:1&gt;   end
+        =&gt; 1000000
+        irb(main):007:0&gt; <code>ps -o rss= -p #{Process.pid}</code>.to_i
+        =&gt; 259360
+        irb(main):008:0&gt; GC.start()
+        =&gt; nil
+        irb(main):009:0&gt; <code>ps -o rss= -p #{Process.pid}</code>.to_i
+        =&gt; 259804
+        irb(main):010:0&gt; users = nil
+        =&gt; nil
+        irb(main):011:0&gt; GC.start()
+        =&gt; nil
+        irb(main):012:0&gt; <code>ps -o rss= -p #{Process.pid}</code>.to_i
+        =&gt; 259828
+~~~
 Even after garbage collecting, there is no decrease in memory usage. (On a side note, there are issues within the field of garbage collection to be kept in mind. Particularly, it seems that no system is actually particularly likely to free any memory. See, for instance, http://stackoverflow.com/questions/1119134/how-do-malloc-and-free-work/5532547#5532547.)</p>
 
 ]]></content>

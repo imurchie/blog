@@ -117,19 +117,17 @@
 9.  Identity: sharing an object
 In all these cases, when the related elements are in different classes (and often within the same class), this is moving toward bad (though some are unavoidable… things need to be named and need to be referred to by those names). The first five are <em>static</em>, depending only on how they are declared and defined. The last four are dynamic, coming about in the running of the software.</p>
 
-<p>Some major sources of coupling include parameter lists that are more than 2–3 elements long,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="k">def</span> <span class="nf">many_parametered_method</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">signup_date</span><span class="p">,</span> <span class="n">mothers_maiden_name</span><span class="p">)</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-Which is easily misused, and difficult to change. This is connascence of Name, Position, Meaning, and Type. However, changing this to an associative array makes it easier for callers to get things right,
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="n">params</span> <span class="o">=</span> <span class="p">{})</span>
-</span><span class="line">
-</span><span class="line">    <span class="nb">method</span><span class="p">({</span> <span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;Isaac&quot;</span><span class="p">,</span> <span class="ss">date</span><span class="p">:</span> <span class="s2">&quot;18/9/13&quot;</span><span class="p">,</span> <span class="n">signup_date</span><span class="p">:</span> <span class="s2">&quot;18/9/13&quot;</span><span class="p">,</span> <span class="n">mothers_maiden_name</span><span class="p">:</span> <span class="s2">&quot;Something&quot;</span> <span class="p">})</span>
-</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
-Now the order doesn’t matter, though we still have coupling of name (is it <code>name</code> or <code>fullname</code>).</p>
+<p lang="ruby">Some major sources of coupling include parameter lists that are more than 2–3 elements long,
+~~~
+        def many_parametered_method(name, date, signup_date, mothers_maiden_name)
+~~~</p>
+<p>Which is easily misused, and difficult to change. This is connascence of Name, Position, Meaning, and Type. However, changing this to an associative array makes it easier for callers to get things right,
+~~~
+        def method(params = {})</p>
+
+<pre lang="ruby"><code>    method({ name: "Isaac", date: "18/9/13", signup_date: "18/9/13", mothers_maiden_name: "Something" }) ~~~
+</code></pre>
+<p>Now the order doesn’t matter, though we still have coupling of name (is it <code>name</code> or <code>fullname</code>).</p>
 
 <p>In a different realm, there is a similar concept called “supervenience”, such that:</p>
 
