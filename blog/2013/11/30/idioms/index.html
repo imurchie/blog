@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Design - Random Thoughts</title>
+  <title>Idioms and Habits - Random Thoughts</title>
   <meta name="author" content="Isaac Murchie">
 
   
-  <meta name="description" content="Russ Olson, in his book Design Patterns in Ruby (an abridged “Gang of Four” book, with implementations in Ruby), he lays out the principles that &hellip;">
+  <meta name="description" content="I am slowly to have in mind Ruby idioms for things that I would initially turn to manual techniques. The first that comes to mind is iterating over &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://imurchie.github.io/blog/blog/2013/11/29/design">
+  <link rel="canonical" href="http://imurchie.github.io/blog/blog/2013/11/30/idioms">
   <link href="/blog/favicon.png" rel="icon">
   <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/blog/atom.xml" rel="alternate" title="Random Thoughts" type="application/atom+xml">
@@ -68,7 +68,7 @@
   
   <header>
     
-      <h1 class="entry-title">Design</h1>
+      <h1 class="entry-title">Idioms and Habits</h1>
     
     
       <p class="meta">
@@ -84,36 +84,58 @@
   
 
 
-<time datetime="2013-11-29T09:00:15-08:00" pubdate data-updated="true">Nov 29<span>th</span>, 2013</time>
+<time datetime="2013-11-30T11:35:00-08:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Russ Olson, in his book <em>Design Patterns in Ruby</em> (an abridged “Gang of Four” book, with implementations in Ruby), he lays out the principles that underly his approach, and which mesh well with the curriculum:</p>
+<div class="entry-content"><p>I am slowly to have in mind Ruby idioms for things that I would initially turn to manual techniques. The first that comes to mind is iterating over an array and a sub-array one shorter. How I would have done it:
+~~~
+        array = [1, 2, 3, 4, 5, 6]</p>
 
-<blockquote>
-  <p>For me, these ideas boil down to four points:
-1.  Separate out the things that change from those that stay the same.
-2.  Program to an interface, not an implementation.
-3.  Prefer composition over inheritance.
-4.  Delegate, delegate, delegate.
-To These, I would like to add one idea that is not really mentioned in _Design Patterns, but that guides much of my own approach to building programs:
-5.  You ain’t gonna need it.</p>
-</blockquote>
+<pre lang="ruby"><code>    # how I would have done it
+    i = 0
+    array.each do |el|
+      j = i + 1
+      while j &lt; array.length
+        # process el (or array[i]) and array[j]
 
-<!-- more -->
+        j += 1
+      end
 
-<p>The first four are identical to the guiding principles of the “Gang of Four.” In order to make robust software systems the places where things change should be identifiable, and ideally minimized (particularly in their public interface, so making a change does not effect, domino-like, other parts of the system). This relates directly to the idea of an interface (not of the C++/Java sort): the public facing parts of the class (or other object) should be as stable as possible, and it is more important to keep them functioning correctly. The implementation matters less, and what implementation is used might be decided using other considerations (e.g., efficiency, stability, auditability).</p>
+      i += 1
+    end ~~~
+</code></pre>
+<p lang="ruby">Which basically Ruby-ifies a C-style for-loop implementation
+~~~
+        for(int i=0; i&lt;array.length; i++)
+          for(int j=i+1; j&lt;array.length; j++)
+            # process array[i] and array[j]
+          end
+        end
+~~~</p>
+<p>However, Ruby can do this in a much better way, using <code>Array</code> and <code>Fixnum</code> methods:
+~~~
+        # using array indices so both sides are alike
+        # and the C implementation is better mirrored
+        array.times do |i|
+          (i+1…array.length).times do |j|
+            # process array[i] and array[j]
+          end
+        end</p>
 
-<p>The third part of this is an interesting one, and the subject of a recent blog post by <a href="http://words.steveklabnik.com/">Steve Klabnik</a>, <a href="http://words.steveklabnik.com/beware-subclassing-ruby-core-classes">“Beware subclassing Ruby core classes”</a>. Ruby only supports single inheritance, so inheriting from one class precludes doing so with another class. However, the central problem of inheritance is the tight coupling that comes about between the class and its superclass. Change the parent and the functionality of the child is suspect.</p>
+<pre lang="ruby"><code>    # or with an Arrray method
+    array.each_with_index do |el, i|
+      (i+1...array.length).times do |j|
+        # process el and array[j]
+      end
+    end ~~~
+</code></pre>
+<p>The benefit of the last two Ruby implementations is that the programmer no longer needs to keep track of the indices. We are, as developers, left with making the logic of the data processing rather than the machinery of iterating over it.</p>
 
-<p>The fourth point is just passing the responsibility to something else. This is key to the idea of <em>D.R.Y</em> (“Don’t Repeat Yourself”), since two elements that do the same thing can delegate to a third that actually does it.</p>
-
-<p>The final part of Olson’s discussion is part of our curriculum directly: If it is not necessary at this time, don’t build it. Speculation almost never gets it right. I’m reminded of Cory Doctorow’s position on science fiction writers:
-&gt; “I’m of the opinion that science fiction writers suck at predicting the future. We mostly go around describing the present in futuristic clothes - (such as) Mary Shelley, Bill Gibson, and many others.”
-&gt; <a href="http://3degree.ecu.edu.au/articles/1378">“Where is my flying car”</a></p>
+<p>While I knew the methods, until recently they hadn’t been in the fore of my mind when I arrive at a problem needing solving. I’m sure there are many more that will eventually percolate up so that they are the go-to implementations.</p>
 </div>
 
 
@@ -136,7 +158,7 @@ To These, I would like to add one idea that is not really mentioned in _Design P
   
 
 
-<time datetime="2013-11-29T09:00:15-08:00" pubdate data-updated="true">Nov 29<span>th</span>, 2013</time>
+<time datetime="2013-11-30T11:35:00-08:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
       
 
 
@@ -144,7 +166,7 @@ To These, I would like to add one idea that is not really mentioned in _Design P
     
       <div class="sharing">
   
-  <a href="/blog//twitter.com/share" class="twitter-share-button" data-url="http://imurchie.github.io/blog/blog/2013/11/29/design/" data-via="" data-counturl="http://imurchie.github.io/blog/blog/2013/11/29/design/" >Tweet</a>
+  <a href="/blog//twitter.com/share" class="twitter-share-button" data-url="http://imurchie.github.io/blog/blog/2013/11/30/idioms/" data-via="" data-counturl="http://imurchie.github.io/blog/blog/2013/11/30/idioms/" >Tweet</a>
   
   
   
@@ -153,10 +175,8 @@ To These, I would like to add one idea that is not really mentioned in _Design P
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/blog/2013/11/28/ruby-symbols/" title="Previous Post: Ruby Symbols">&laquo; Ruby Symbols</a>
+        <a class="basic-alignment left" href="/blog/blog/2013/11/30/block/" title="Previous Post: Blocks, Procs, Lambdas, Methods">&laquo; Blocks, Procs, Lambdas, Methods</a>
       
-      
-        <a class="basic-alignment right" href="/blog/blog/2013/11/29/coupling/" title="Next Post: Coupling">Coupling &raquo;</a>
       
     </p>
   </footer>

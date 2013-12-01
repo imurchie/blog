@@ -93,12 +93,11 @@
 
 <div class="entry-content"><p>One of the problems encountered in designing systems is keeping the <em>coupling</em> between components loose. That is, making each object only know as much about the others as it absolutely needs.</p>
 
-<p>Jim Weirich gave a talk at the <em>Distill</em> conference on the topic of &ldquo;connascence,&rdquo; or the coming-into-being-together. His idea was that there are two related phenomena in software design: <em>coupling</em> and <em>coherence</em>.</p>
+<p>Jim Weirich gave a talk at the <em>Distill</em> conference on the topic of “connascence,” or the coming-into-being-together. His idea was that there are two related phenomena in software design: <em>coupling</em> and <em>coherence</em>.</p>
 
 <p><em>Coupling</em> occurs between two pieces of software (from separate systems talking to each other all the way down to two objects within the same program). If two elements <code>A</code> and <code>B</code> are <em>coupled</em>, changing <code>A</code> forces a change in <code>B</code>, and (likely) vice versa.</p>
 
 <!-- more -->
-
 
 <p>The former is bad, linking two different elements together, which the latter is good, tying everything within a single element into a cohesive unit.</p>
 
@@ -116,34 +115,31 @@
 7.  Timing: elements related by some time condition (e.g., race conditions, timeout, etc.)
 8.  Value: values related by constraints (e.g., three sides to a triangle)
 9.  Identity: sharing an object
-In all these cases, when the related elements are in different classes (and often within the same class), this is moving toward bad (though some are unavoidable&hellip; things need to be named and need to be referred to by those names). The first five are <em>static</em>, depending only on how they are declared and defined. The last four are dynamic, coming about in the running of the software.</p>
+In all these cases, when the related elements are in different classes (and often within the same class), this is moving toward bad (though some are unavoidable… things need to be named and need to be referred to by those names). The first five are <em>static</em>, depending only on how they are declared and defined. The last four are dynamic, coming about in the running of the software.</p>
 
-<p>Some major sources of coupling include parameter lists that are more than 2&mdash;3 elements long,</p>
+<p>Some major sources of coupling include parameter lists that are more than 2–3 elements long,
+&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="k">def</span> <span class="nf">many_parametered_method</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">signup_date</span><span class="p">,</span> <span class="n">mothers_maiden_name</span><span class="p">)</span>
+</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
+Which is easily misused, and difficult to change. This is connascence of Name, Position, Meaning, and Type. However, changing this to an associative array makes it easier for callers to get things right,
+&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="ruby"><span class="line">    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="n">params</span> <span class="o">=</span> <span class="p">{})</span>
+</span><span class="line">
+</span><span class="line">    <span class="nb">method</span><span class="p">({</span> <span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;Isaac&quot;</span><span class="p">,</span> <span class="ss">date</span><span class="p">:</span> <span class="s2">&quot;18/9/13&quot;</span><span class="p">,</span> <span class="n">signup_date</span><span class="p">:</span> <span class="s2">&quot;18/9/13&quot;</span><span class="p">,</span> <span class="n">mothers_maiden_name</span><span class="p">:</span> <span class="s2">&quot;Something&quot;</span> <span class="p">})</span>
+</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;
+Now the order doesn’t matter, though we still have coupling of name (is it <code>name</code> or <code>fullname</code>).</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>    <span class="k">def</span> <span class="nf">many_parametered_method</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">signup_date</span><span class="p">,</span> <span class="n">mothers_maiden_name</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>In a different realm, there is a similar concept called “supervenience”, such that:</p>
 
+<blockquote>
+  <p>“A set of properties A supervenes upon another set B just in case no two things can differ with respect to A-properties without also differing with respect to their B-properties.”
+<a href="http://plato.stanford.edu/entries/supervenience/"><em>Stanford Encyclopedia of Philosophy</em></a></p>
+</blockquote>
 
-<p>Which is easily misused, and difficult to change. This is connascence of Name, Position, Meaning, and Type. However, changing this to an associative array makes it easier for callers to get things right,</p>
+<p>I’ll just leave that out there for myself to think about.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="n">params</span> <span class="o">=</span> <span class="p">{})</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nb">method</span><span class="p">({</span> <span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;Isaac&quot;</span><span class="p">,</span> <span class="ss">date</span><span class="p">:</span> <span class="s2">&quot;18/9/13&quot;</span><span class="p">,</span> <span class="n">signup_date</span><span class="p">:</span> <span class="s2">&quot;18/9/13&quot;</span><span class="p">,</span> <span class="n">mothers_maiden_name</span><span class="p">:</span> <span class="s2">&quot;Something&quot;</span> <span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now the order doesn&rsquo;t matter, though we still have coupling of name (is it <code>name</code> or <code>fullname</code>).</p>
-
-<p>In a different realm, there is a similar concept called &ldquo;supervenience&rdquo;, such that:</p>
-
-<blockquote><p>&ldquo;A set of properties A supervenes upon another set B just in case no two things can differ with respect to A-properties without also differing with respect to their B-properties.&rdquo;
-<a href="http://plato.stanford.edu/entries/supervenience/"><em>Stanford Encyclopedia of Philosophy</em></a></p></blockquote>
-
-<p>I&rsquo;ll just leave that out there for myself to think about.</p>
 </div>
 
 
@@ -201,6 +197,10 @@ In all these cases, when the related elements are in different classes (and ofte
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/blog/2013/11/30/idioms/">Idioms and Habits</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/blog/2013/11/30/block/">Blocks, Procs, Lambdas, Methods</a>
       </li>
     
@@ -214,10 +214,6 @@ In all these cases, when the related elements are in different classes (and ofte
     
       <li class="post">
         <a href="/blog/blog/2013/11/29/coupling/">Coupling</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/blog/2013/11/29/design/">Design</a>
       </li>
     
   </ul>
