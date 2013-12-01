@@ -91,7 +91,7 @@
   </header>
 
 
-<div class="entry-content"><p>Ruby <code>Symbol</code>s are interesting things, conceptually straddling the line separating themselves from <code>String</code>s. They do not, however, have any content of their own. They are, basically, the logical endpoint of the <em>nominitive</em> case in case-based grammars.</p>
+<div class="entry-content"><p>Ruby <code lang="ruby">Symbol</code>s are interesting things, conceptually straddling the line separating themselves from <code lang="ruby">String</code>s. They do not, however, have any content of their own. They are, basically, the logical endpoint of the <em>nominitive</em> case in case-based grammars.</p>
 
 <p>As we know from the Sanskrit grammarians,</p>
 
@@ -106,78 +106,152 @@
 
 <p>So the nominitive, in Sanskrit grammar, conveys most prominently (grammatical <em>dvandva_s functioning as ordered-by-preference) the bare meaning of the lexical stem. And this is what Ruby <code>Symbol</code>s do! They convey information only insofar as they are named usefully. Their main purpose is as… well… _symbols</em>.</p>
 
-<p>One thing of note is that within a Ruby interpretter, there is only ever <em>one</em> copy of any given <code>Symbol</code>. So checking for equality is fast, the equality being directly testable through the <code>Symbol</code>s identity.</p>
+<p>One thing of note is that within a Ruby interpretter, there is only ever <em>one</em> copy of any given <code lang="ruby">Symbol</code>. So checking for equality is fast, the equality being directly testable through the <code lang="ruby">Symbol</code>s identity.</p>
 
-<p lang="ruby">So, for instance, if we have a <code>Hash</code> object that has <code>String</code> keys,
-~~~
-person = {
-  “name”    =&gt; “Isaac”,
-  “tumblr”  =&gt; “isaac-codes”
+<p>So, for instance, if we have a <code lang="ruby">Hash</code> object that has <code lang="ruby">String</code> keys,</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+</pre></td>
+  <td class="code"><pre>person = {
+  <span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>    =&gt; <span class="string"><span class="delimiter">&quot;</span><span class="content">Isaac</span><span class="delimiter">&quot;</span></span>,
+  <span class="string"><span class="delimiter">&quot;</span><span class="content">tumblr</span><span class="delimiter">&quot;</span></span>  =&gt; <span class="string"><span class="delimiter">&quot;</span><span class="content">isaac-codes</span><span class="delimiter">&quot;</span></span>
 }
-~~~</p>
-<p lang="ruby">When we access an element from the <code>Hash</code>,
-~~~
-        name = person[“name”]
-~~~</p>
-<p>The operation needs to check the keys for the <code>String</code> “name”, which means checking that the first letter is “n”, the second “a” etc. etc. ad nauseum.</p>
+</pre></td>
+</tr></table>
+</div>
 
-<p lang="ruby">If, on the other hand, we use <code>Symbols</code> for the keys,
-~~~
-        person = {
-          name:   “Isaac”,
-          tumblr: “isaac-codes”
-        }
-~~~</p>
-<p lang="ruby">When we access an element,
-~~~
-        name = person[:name]
-~~~</p>
-<p lang="cpp">The equality operation merely tests whether the two <code>Symbol</code>s occupy the same position in memory! The <em>C</em> code for the operation is simple,
-~~~
-        static VALUE
-        sym_equal(VALUE sym1, VALUE sym2) {
-          if (sym1 == sym2) return Qtrue;
-          return Qfalse;
-        }
-~~~</p>
-<p>We can see, therefore that comparison is O(1) for the <code>Symbol</code>!</p>
+<p>When we access an element from the <code lang="ruby">Hash</code>,</p>
 
-<p>This simplicty, however, leads to one major potential problem in the use of <code>Symbol</code>s, as noted in the curriculum. Since <code>Symbol</code>s aren’t referenced by anything, there is no indicator of their going “out of scope,” and so no possibility for the Garbage Collector to release them from memory. So every <code>Symbol</code> created in the course of running a Ruby script continues to exist in memory. They are, therefore, unsuitable for “situations where you could have an unbounded number of unique
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+</pre></td>
+  <td class="code"><pre>name = person[<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>]
+</pre></td>
+</tr></table>
+</div>
+
+<p>The operation needs to check the keys for the <code lang="ruby">String</code> “<code lang="ruby">name</code>”, which means checking that the first letter is “n”, the second “a” etc. etc. ad nauseum.</p>
+
+<p>If, on the other hand, we use <code lang="ruby">Symbol</code>s for the keys,</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+</pre></td>
+  <td class="code"><pre>person = {
+  <span class="key">name</span>:   <span class="string"><span class="delimiter">&quot;</span><span class="content">Isaac</span><span class="delimiter">&quot;</span></span>,
+  <span class="key">tumblr</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">isaac-codes</span><span class="delimiter">&quot;</span></span>
+}
+</pre></td>
+</tr></table>
+</div>
+
+<p>When we access an element,</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+</pre></td>
+  <td class="code"><pre>name = person[<span class="symbol">:name</span>]
+</pre></td>
+</tr></table>
+</div>
+
+<p>The equality operation merely tests whether the two <code lang="ruby">Symbol</code>s occupy the same position in memory! The <em>C</em> code for the operation is simple,</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+</pre></td>
+  <td class="code"><pre><span class="directive">static</span> VALUE
+sym_equal(VALUE sym1, VALUE sym2) {
+  <span class="keyword">if</span> (sym1 == sym2) <span class="keyword">return</span> Qtrue;
+  <span class="keyword">return</span> Qfalse;
+}
+</pre></td>
+</tr></table>
+</div>
+
+<p>We can see, therefore that comparison is O(1) for the <code lang="ruby">Symbol</code>!</p>
+
+<p>This simplicty, however, leads to one major potential problem in the use of <code lang="ruby">Symbol</code>s, as noted in the curriculum. Since <code lang="ruby">Symbol</code>s aren’t referenced by anything, there is no indicator of their going “out of scope,” and so no possibility for the Garbage Collector to release them from memory. So every <code lang="ruby">Symbol</code> created in the course of running a Ruby script continues to exist in memory. They are, therefore, unsuitable for “situations where you could have an unbounded number of unique
 symbol values” (http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/164890).</p>
 
-<p>The practical take-away of this is to manage well what is being converted into a symbol. Repeatedly used <code>Hash</code> keys, like those to the Rack/Rails <code>params</code> hash, are fine. But converting <em>ad hoc</em> <code>String</code>s into <code>Symbol</code>s is asking for problems on any non-trivial system.</p>
+<p>The practical take-away of this is to manage well what is being converted into a symbol. Repeatedly used <code lang="ruby">Hash</code> keys, like those to the Rack/Rails <code lang="ruby">params</code> hash, are fine. But converting <em>ad hoc</em> <code lang="ruby">String</code>s into <code lang="ruby">Symbol</code>s is asking for problems on any non-trivial system.</p>
 
-<p lang="ruby">If, for instance, we took a user’s name and converted it to a   <code>Symbol</code> for insertion into a <code>Hash</code>,
-~~~
-        users = {}
-        username = “Isaac”
-        users[username.to_sym] = “Present”
-~~~</p>
-<p>And we extend the system to handle a million users, the memory usage will balloon! To illustrate,
-~~~
-        irb(main):001:0&gt; <code>ps -o rss= -p #{Process.pid}</code>.to_i
-        =&gt; 19908
-        irb(main):002:0&gt; users = {}
-        =&gt; {}
-        irb(main):003:0&gt; 1_000_000.times do |i|
-        irb(main):004:1*   username = “user_#{i}”
-        irb(main):005:1&gt;   users[username.to_sym] = true
-        irb(main):006:1&gt;   end
-        =&gt; 1000000
-        irb(main):007:0&gt; <code>ps -o rss= -p #{Process.pid}</code>.to_i
-        =&gt; 259360
-        irb(main):008:0&gt; GC.start()
-        =&gt; nil
-        irb(main):009:0&gt; <code>ps -o rss= -p #{Process.pid}</code>.to_i
-        =&gt; 259804
-        irb(main):010:0&gt; users = nil
-        =&gt; nil
-        irb(main):011:0&gt; GC.start()
-        =&gt; nil
-        irb(main):012:0&gt; <code>ps -o rss= -p #{Process.pid}</code>.to_i
-        =&gt; 259828
-~~~
-Even after garbage collecting, there is no decrease in memory usage. (On a side note, there are issues within the field of garbage collection to be kept in mind. Particularly, it seems that no system is actually particularly likely to free any memory. See, for instance, http://stackoverflow.com/questions/1119134/how-do-malloc-and-free-work/5532547#5532547.)</p>
+<p>If, for instance, we took a user’s name and converted it to a   <code lang="ruby">Symbol</code> for insertion into a <code lang="ruby">Hash</code>,</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+</pre></td>
+  <td class="code"><pre>users = {}
+username = <span class="string"><span class="delimiter">&quot;</span><span class="content">Isaac</span><span class="delimiter">&quot;</span></span>
+users[username.to_sym] = <span class="string"><span class="delimiter">&quot;</span><span class="content">Present</span><span class="delimiter">&quot;</span></span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>And we extend the system to handle a million users, the memory usage will balloon! To illustrate,</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+<a href="#n16" name="n16">16</a>
+<a href="#n17" name="n17">17</a>
+<a href="#n18" name="n18">18</a>
+<a href="#n19" name="n19">19</a>
+<strong><a href="#n20" name="n20">20</a></strong>
+<a href="#n21" name="n21">21</a>
+</pre></td>
+  <td class="code"><pre>irb(main):<span class="integer">001</span>:<span class="integer">0</span>&gt; <span class="shell"><span class="delimiter">`</span><span class="content">ps -o rss= -p </span><span class="inline"><span class="inline-delimiter">#{</span><span class="constant">Process</span>.pid<span class="inline-delimiter">}</span></span><span class="delimiter">`</span></span>.to_i
+=&gt; <span class="integer">19908</span>
+irb(main):<span class="integer">002</span>:<span class="integer">0</span>&gt; users = {}
+=&gt; {}
+irb(main):<span class="integer">003</span>:<span class="integer">0</span>&gt; <span class="integer">1_000_000</span>.times <span class="keyword">do</span> |i|
+irb(main):<span class="integer">004</span>:<span class="integer">1</span>*   username = <span class="string"><span class="delimiter">&quot;</span><span class="content">user_</span><span class="inline"><span class="inline-delimiter">#{</span>i<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+irb(main):<span class="integer">005</span>:<span class="integer">1</span>&gt;   users[username.to_sym] = <span class="predefined-constant">true</span>
+irb(main):<span class="integer">006</span>:<span class="integer">1</span>&gt;   <span class="keyword">end</span>
+=&gt; <span class="integer">1000000</span>
+irb(main):<span class="integer">007</span>:<span class="integer">0</span>&gt; <span class="shell"><span class="delimiter">`</span><span class="content">ps -o rss= -p </span><span class="inline"><span class="inline-delimiter">#{</span><span class="constant">Process</span>.pid<span class="inline-delimiter">}</span></span><span class="delimiter">`</span></span>.to_i
+=&gt; <span class="integer">259360</span>
+irb(main):<span class="integer">00</span><span class="integer">8</span>:<span class="integer">0</span>&gt; <span class="constant">GC</span>.start()
+=&gt; <span class="predefined-constant">nil</span>
+irb(main):<span class="integer">00</span><span class="integer">9</span>:<span class="integer">0</span>&gt; <span class="shell"><span class="delimiter">`</span><span class="content">ps -o rss= -p </span><span class="inline"><span class="inline-delimiter">#{</span><span class="constant">Process</span>.pid<span class="inline-delimiter">}</span></span><span class="delimiter">`</span></span>.to_i
+=&gt; <span class="integer">259804</span>
+irb(main):<span class="integer">010</span>:<span class="integer">0</span>&gt; users = <span class="predefined-constant">nil</span>
+=&gt; <span class="predefined-constant">nil</span>
+irb(main):<span class="integer">011</span>:<span class="integer">0</span>&gt; <span class="constant">GC</span>.start()
+=&gt; <span class="predefined-constant">nil</span>
+irb(main):<span class="integer">012</span>:<span class="integer">0</span>&gt; <span class="shell"><span class="delimiter">`</span><span class="content">ps -o rss= -p </span><span class="inline"><span class="inline-delimiter">#{</span><span class="constant">Process</span>.pid<span class="inline-delimiter">}</span></span><span class="delimiter">`</span></span>.to_i
+=&gt; <span class="integer">259828</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>Even after garbage collecting, there is no decrease in memory usage. (On a side note, there are issues within the field of garbage collection to be kept in mind. Particularly, it seems that no system is actually particularly likely to free any memory. See, for instance, http://stackoverflow.com/questions/1119134/how-do-malloc-and-free-work/5532547#5532547.)</p>
 
 </div>
 
