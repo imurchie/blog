@@ -91,22 +91,39 @@
   </header>
 
 
-<div class="entry-content"><p>I am slowly to have in mind Ruby idioms for things that I would initially turn to manual techniques. The first that comes to mind is iterating over an array and a sub-array one shorter. How I would have done it:
-~~~ ruby
-    array = [1, 2, 3, 4, 5, 6]</p>
+<div class="entry-content"><p>I am slowly to have in mind Ruby idioms for things that I would initially turn to manual techniques. The first that comes to mind is iterating over an array and a sub-array one shorter. How I would have done it:</p>
 
-<pre><code>i = 0
-array.each do |el|
-  j = i + 1
-  while j &lt; array.length
-    # process el (or array[i]) and array[j]
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+</pre></td>
+  <td class="code"><pre>    array = [<span class="integer">1</span>, <span class="integer">2</span>, <span class="integer">3</span>, <span class="integer">4</span>, <span class="integer">5</span>, <span class="integer">6</span>]
 
-    j += 1
-  end
+    i = <span class="integer">0</span>
+    array.each <span class="keyword">do</span> |el|
+      j = i + <span class="integer">1</span>
+      <span class="keyword">while</span> j &lt; array.length
+        <span class="comment"># process el (or array[i]) and array[j]</span>
 
-  i += 1
-end ~~~
-</code></pre>
+        j += <span class="integer">1</span>
+      <span class="keyword">end</span>
+
+      i += <span class="integer">1</span>
+    <span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
 
 <p>Which basically Ruby-ifies a C-style for-loop implementation</p>
 
