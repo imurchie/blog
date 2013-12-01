@@ -91,23 +91,23 @@
   </header>
 
 
-<div class="entry-content"><p>I am slowly to have in mind Ruby idioms for things that I would initially turn to manual techniques. The first that comes to mind is iterating over an array and a sub-array one shorter. How I would have done it:
-~~~
-        array = [1, 2, 3, 4, 5, 6]</p>
+<div class="entry-content"><p>I am slowly to have in mind Ruby idioms for things that I would initially turn to manual techniques. The first that comes to mind is iterating over an array and a sub-array one shorter. How I would have done it:</p>
 
-<pre lang="ruby"><code>    # how I would have done it
-    i = 0
-    array.each do |el|
-      j = i + 1
-      while j &lt; array.length
-        # process el (or array[i]) and array[j]
+<p>array = [1, 2, 3, 4, 5, 6]</p>
 
-        j += 1
-      end
+<h1 id="how-i-would-have-done-it">how I would have done it</h1>
+<p>i = 0
+array.each do |el|
+  j = i + 1
+  while j &lt; array.length
+    # process el (or array[i]) and array[j]</p>
 
-      i += 1
-    end ~~~
+<pre><code>j += 1   end
 </code></pre>
+
+<p lang="ruby">i += 1
+end</p>
+
 <p lang="ruby">Which basically Ruby-ifies a C-style for-loop implementation
 ~~~
         for(int i=0; i&lt;array.length; i++)
