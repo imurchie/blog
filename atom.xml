@@ -4,7 +4,7 @@
   <title><![CDATA[Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-12-01T12:36:24-08:00</updated>
+  <updated>2013-12-01T12:42:20-08:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -54,30 +54,57 @@ array.each <span class="keyword">do</span> |el|
 
 <p>Which basically Ruby-ifies a C-style for-loop implementation</p>
 
-<pre lang="ruby"><code>for(int i=0; i&lt;array.length; i++)
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+</pre></td>
+  <td class="code"><pre>for(int i=0; i&lt;array.length; i++)
   for(int j=i+1; j&lt;array.length; j++)
     # process array[i] and array[j]
   end
 end
-</code></pre>
+</pre></td>
+</tr></table>
+</div>
 
 <p>However, Ruby can do this in a much better way, using <code lang="ruby">Array</code> and <code lang="ruby">Fixnum</code> methods:</p>
 
-<pre lang="ruby"><code># using array indices so both sides are alike
-# and the C implementation is better mirrored
-array.times do |i|
-  (i+1...array.length).times do |j|
-    # process array[i] and array[j]
-  end
-end
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+</pre></td>
+  <td class="code"><pre><span class="comment"># using array indices so both sides are alike</span>
+<span class="comment"># and the C implementation is better mirrored</span>
+array.times <span class="keyword">do</span> |i|
+  (i+<span class="integer">1</span>...array.length).times <span class="keyword">do</span> |j|
+    <span class="comment"># process array[i] and array[j]</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
 
-# or with an Arrray method
-array.each_with_index do |el, i|
-  (i+1...array.length).times do |j|
-    # process el and array[j]
-  end
-end
-</code></pre>
+<span class="comment"># or with an Arrray method</span>
+array.each_with_index <span class="keyword">do</span> |el, i|
+  (i+<span class="integer">1</span>...array.length).times <span class="keyword">do</span> |j|
+    <span class="comment"># process el and array[j]</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
 
 <p>The benefit of the last two Ruby implementations is that the programmer no longer needs to keep track of the indices. We are, as developers, left with making the logic of the data processing rather than the machinery of iterating over it.</p>
 
