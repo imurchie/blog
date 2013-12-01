@@ -4,7 +4,7 @@
   <title><![CDATA[Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-12-01T11:19:10-08:00</updated>
+  <updated>2013-12-01T11:20:46-08:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -36,31 +36,33 @@ array.each do |el|
 end
 </code></pre>
 
-<p lang="ruby">Which basically Ruby-ifies a C-style for-loop implementation
-~~~
-        for(int i=0; i&lt;array.length; i++)
-          for(int j=i+1; j&lt;array.length; j++)
-            # process array[i] and array[j]
-          end
-        end
-~~~</p>
-<p>However, Ruby can do this in a much better way, using <code>Array</code> and <code>Fixnum</code> methods:
-~~~
-        # using array indices so both sides are alike
-        # and the C implementation is better mirrored
-        array.times do |i|
-          (i+1…array.length).times do |j|
-            # process array[i] and array[j]
-          end
-        end</p>
+<p>Which basically Ruby-ifies a C-style for-loop implementation</p>
 
-<pre lang="ruby"><code>    # or with an Arrray method
-    array.each_with_index do |el, i|
-      (i+1...array.length).times do |j|
-        # process el and array[j]
-      end
-    end ~~~
+<pre lang="ruby"><code>for(int i=0; i&lt;array.length; i++)
+  for(int j=i+1; j&lt;array.length; j++)
+    # process array[i] and array[j]
+  end
+end
 </code></pre>
+
+<p>However, Ruby can do this in a much better way, using <code>Array</code> and <code>Fixnum</code> methods:</p>
+
+<pre lang="ruby"><code># using array indices so both sides are alike
+# and the C implementation is better mirrored
+array.times do |i|
+  (i+1...array.length).times do |j|
+    # process array[i] and array[j]
+  end
+end
+
+# or with an Arrray method
+array.each_with_index do |el, i|
+  (i+1...array.length).times do |j|
+    # process el and array[j]
+  end
+end
+</code></pre>
+
 <p>The benefit of the last two Ruby implementations is that the programmer no longer needs to keep track of the indices. We are, as developers, left with making the logic of the data processing rather than the machinery of iterating over it.</p>
 
 <p>While I knew the methods, until recently they hadn’t been in the fore of my mind when I arrive at a problem needing solving. I’m sure there are many more that will eventually percolate up so that they are the go-to implementations.</p>
