@@ -98,7 +98,6 @@
 
 <pre lang="ruby"><code>array = [1, 2, 3, 4, 5, 6]
 
-# how I would have done it
 i = 0
 array.each do |el|
   j = i + 1
@@ -121,7 +120,7 @@ end
 end
 </code></pre>
 
-<p>However, Ruby can do this in a much better way, using <code>Array</code> and <code>Fixnum</code> methods:</p>
+<p>However, Ruby can do this in a much better way, using <code lang="ruby">Array</code> and <code lang="ruby">Fixnum</code> methods:</p>
 
 <pre lang="ruby"><code># using array indices so both sides are alike
 # and the C implementation is better mirrored
