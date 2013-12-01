@@ -4,7 +4,7 @@
   <title><![CDATA[Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-12-01T12:15:52-08:00</updated>
+  <updated>2013-12-01T12:20:24-08:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -19,32 +19,21 @@
     <updated>2013-11-30T11:35:00-08:00</updated>
     <id>http://imurchie.github.io/blog/blog/2013/11/30/idioms</id>
     <content type="html"><![CDATA[<p>I am slowly to have in mind Ruby idioms for things that I would initially turn to manual techniques. The first that comes to mind is iterating over an array and a sub-array one shorter. How I would have done it:
-&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class=""><span class="line">array = [1, 2, 3, 4, 5, 6]
-</span><span class="line">
-</span><span class="line">i = 0
-</span><span class="line">array.each do |el|
-</span><span class="line">  j = i + 1
-</span><span class="line">  while j &lt; array.length
-</span><span class="line">    # process el (or array[i]) and array[j]
-</span><span class="line">
-</span><span class="line">    j += 1
-</span><span class="line">  end
-</span><span class="line">
-</span><span class="line">  i += 1
-</span><span class="line">end</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;</p>
+~~~ ruby
+    array = [1, 2, 3, 4, 5, 6]</p>
+
+<pre><code>i = 0
+array.each do |el|
+  j = i + 1
+  while j &lt; array.length
+    # process el (or array[i]) and array[j]
+
+    j += 1
+  end
+
+  i += 1
+end ~~~
+</code></pre>
 
 <p>Which basically Ruby-ifies a C-style for-loop implementation</p>
 
