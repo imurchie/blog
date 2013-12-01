@@ -97,11 +97,11 @@
         Benchmark.bm do |b|
           b.report(“+:  “) do
             string = “test”
-            100<em>000.times { string += “another” }
+            100_000.times { string += “another” }
           end
           b.report(“«: “) do
             string = “test”
-            100</em>000.times { string « “another” }
+            100_000.times { string « “another” }
           end
         end
 ~~~</p>

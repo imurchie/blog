@@ -4,7 +4,7 @@
   <title><![CDATA[Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-12-01T11:47:21-08:00</updated>
+  <updated>2013-12-01T12:09:46-08:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -242,11 +242,11 @@ end
         Benchmark.bm do |b|
           b.report(“+:  “) do
             string = “test”
-            100<em>000.times { string += “another” }
+            100_000.times { string += “another” }
           end
           b.report(“«: “) do
             string = “test”
-            100</em>000.times { string « “another” }
+            100_000.times { string « “another” }
           end
         end
 ~~~</p>
@@ -432,7 +432,7 @@ symbol values” (http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/16
         =&gt; 19908
         irb(main):002:0&gt; users = {}
         =&gt; {}
-        irb(main):003:0&gt; 1<em>000</em>000.times do |i|
+        irb(main):003:0&gt; 1_000_000.times do |i|
         irb(main):004:1*   username = “user_#{i}”
         irb(main):005:1&gt;   users[username.to_sym] = true
         irb(main):006:1&gt;   end
