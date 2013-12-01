@@ -4,7 +4,7 @@
   <title><![CDATA[Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-12-01T13:17:11-08:00</updated>
+  <updated>2013-12-01T13:20:11-08:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -21,21 +21,23 @@
     <content type="html"><![CDATA[<p>In thinking through how we might change chess game to use a mixin model instead of an inheritance. Our main object model at the moment looks like:</p>
 
 <pre>
-        - Chess::
-            - Game
-            - Board
-                - Piece (abstract)
-                    - Pawn
-                    - SteppingPiece (abstract)
-                        - King
-                        - Knight
-                    - SlidingPiece (abstract)
-                        - Queen
-                        - Rook
-                        - Bishop
+- Chess::
+    - Game
+    - Board
+        - Piece (abstract)
+            - Pawn
+            - SteppingPiece (abstract)
+                - King
+                - Knight
+            - SlidingPiece (abstract)
+                - Queen
+                - Rook
+                - Bishop
 </pre>
 
 <p>It was difficult to think of logical units that the mixin modules would embody. In this class hierarchy all the parent classes make sense to me.</p>
+
+<!-- more -->
 
 <p>So I decided to look in the Ruby Core to see what the modules were. There are 18 in total (of 105 classes and modules (17%)). Some of them are basically namespace modules, containing constants (e.g., <a href="http://ruby-doc.org/core-1.9.3/Errno.html"><code>Errno</code></a> and <a href="http://ruby-doc.org/core-1.9.3/File/Constants.html"><code>File::Constants</code></a>), or a group of methods that any object might need to be able to deal with (e.g., process-level access, through the modules <a href="http://ruby-doc.org/core-1.9.3/Process.html"><code>Process</code></a> and <a href="http://ruby-doc.org/core-1.9.3/Process/Sys.html"><code>Process::Sys</code></a>, and their helpers in the modules <a href="http://ruby-doc.org/core-1.9.3/Process/GID.html"><code>Process::GID</code></a> and <a href="http://ruby-doc.org/core-1.9.3/Process/UID.html"><code>Process::UID</code></a>).</p>
 
@@ -112,6 +114,8 @@ offsets.each <span class="keyword">do</span> |offset|
 </pre></td>
 </tr></table>
 </div>
+
+<!-- more -->
 
 <p>But we could also not deal with the subarrays:</p>
 
