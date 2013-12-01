@@ -9,7 +9,7 @@
   <meta name="author" content="Isaac Murchie">
 
   
-  <meta name="description" content="I am slowly to have in mind Ruby idioms for things that I would initially turn to manual techniques. The first that comes to mind is iterating over &hellip;">
+  <meta name="description" content="In thinking through how we might change chess game to use a mixin model instead of an inheritance. Our main object model at the moment looks like: - &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,214 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/blog/2013/12/01/inheritance/">Inheritance vs. Mixins</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-01T13:08:46-08:00" pubdate data-updated="true">Dec 1<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In thinking through how we might change chess game to use a mixin model instead of an inheritance. Our main object model at the moment looks like:</p>
+
+<pre>
+        - Chess::
+            - Game
+            - Board
+                - Piece (abstract)
+                    - Pawn
+                    - SteppingPiece (abstract)
+                        - King
+                        - Knight
+                    - SlidingPiece (abstract)
+                        - Queen
+                        - Rook
+                        - Bishop
+</pre>
+
+<p>It was difficult to think of logical units that the mixin modules would embody. In this class hierarchy all the parent classes make sense to me.</p>
+
+<p>So I decided to look in the Ruby Core to see what the modules were. There are 18 in total (of 105 classes and modules (17%)). Some of them are basically namespace modules, containing constants (e.g., <a href="http://ruby-doc.org/core-1.9.3/Errno.html"><code>Errno</code></a> and <a href="http://ruby-doc.org/core-1.9.3/File/Constants.html"><code>File::Constants</code></a>), or a group of methods that any object might need to be able to deal with (e.g., process-level access, through the modules <a href="http://ruby-doc.org/core-1.9.3/Process.html"><code>Process</code></a> and <a href="http://ruby-doc.org/core-1.9.3/Process/Sys.html"><code>Process::Sys</code></a>, and their helpers in the modules <a href="http://ruby-doc.org/core-1.9.3/Process/GID.html"><code>Process::GID</code></a> and <a href="http://ruby-doc.org/core-1.9.3/Process/UID.html"><code>Process::UID</code></a>).</p>
+
+<p>In the namespacing group are also two very important modules that have different uses. First is <a href="http://ruby-doc.org/core-1.9.3/Math.html"><code>Math</code></a>, which is constants and class methods, used atomically without ever being mixed in:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+</pre></td>
+  <td class="code"><pre>square_root = <span class="constant">Math</span>::sqrt(<span class="integer">25</span>)
+<span class="comment"># 5.0</span>
+
+log = <span class="constant">Math</span>::log(<span class="integer">49</span>, <span class="constant">Math</span>::<span class="constant">E</span>)
+<span class="comment"># 3.8918202981106265</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>Second is the module that is mixed in to <em>every</em> object since it is mixed in to the parent of all classes, <a href="http://www.ruby-doc.org/core-1.9.3/Object.html"><code>Object</code></a> (except those classes that explicitly bypass <code>Object</code> by inheriting from the “blank slate,” <a href="http://www.ruby-doc.org/core-1.9.3/BasicObject.html"><code>BasicObject</code></a>). This module, <a href="http://ruby-doc.org/core-1.9.3/Kernel.html"><code>Kernel</code></a> gives <code>Object</code> and its descendents a number of utility methods for things like object conversion (e.g., <code>Kernel#Array</code>, and <code>Kernel#String</code>), some callback methods (e.g., <code>Kernel#at_exit</code> which runs the provided block on exit of the program), and, most importantly, the oft-used methods <code>puts</code>/<code>print</code> and <code>gets</code> (for basic IO) and <code>require</code> and <code>require_relative</code>, which bring other files into scope.</p>
+
+<p>Interestingly, <code>Kernel</code> also is the source of the <code>lambda</code> method, which in use looks like a <a href="http://ruby-doc.org/docs/keywords/1.9/">keyword</a> or operator. So lambda creation is actually a method call that takes a block:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+</pre></td>
+  <td class="code"><pre>proc = lambda { puts <span class="string"><span class="delimiter">&quot;</span><span class="content">We're in a lambda!</span><span class="delimiter">&quot;</span></span> }
+proc.call
+<span class="comment"># =&gt; We're in a lambda!</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>I am still looking around for where to find the “stabby” lambda syntax introduced in 1.9. It appears to be “syntactic sugar” that is hidden within the interpretter implementation (and so does not show up on method lists in the documentation, like <code>+=</code> is not listed for <code>Fixnum</code>).</p>
+
+<p>Another type of module in the core, and probably the most used ones by application developers, are those describing a capability, named with an adjective: adding the capacity to be iterated over with <a href="http://ruby-doc.org/core-1.9.3/Enumerable.html"><code>Enumerable</code></a>, the capacity to be compared with <a href="http://ruby-doc.org/core-1.9.3/Comparable.html"><code>Comparable</code></a>, the capacity to do certain IO tasks with <a href="http://ruby-doc.org/core-1.9.3/IO/WaitReadable.html"><code>IO::WaitReadable</code></a> and <a href="http://ruby-doc.org/core-1.9.3/IO/WaitWritable.html"><code>IO::WaitWritable</code></a> (I assume… this is an area actively in need of documentation support).</p>
+
+<p>I’m not sure that I’ve come to an answer to my original question (indeed, I’m pretty sure I did not), but what is available at the core of Ruby is much clearer, and therefore more usable.</p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/blog/2013/12/01/iterators/">Iterators and Parameter-passing</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-01T13:06:59-08:00" pubdate data-updated="true">Dec 1<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>While pairing with people it has been a surprise that it is not generally known that Ruby will decompose subarrays when passing parameters in iterators. That is, for instance, when modelling the movement of a rook in chess, we could have the code:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+</pre></td>
+  <td class="code"><pre><span class="comment"># offsets from the initial position, (x, y)</span>
+offsets = [[<span class="integer">0</span>, <span class="integer">1</span>], [<span class="integer">1</span>, <span class="integer">1</span>], [<span class="integer">0</span>, <span class="integer">-1</span>], [<span class="integer">-1</span>, <span class="integer">-1</span>]]
+offsets.each <span class="keyword">do</span> |offset|
+  offset_x = offset[<span class="integer">0</span>]
+  offset_y = offset[<span class="integer">1</span>]
+  new_x, new_y = x + offset_x, y + offset_y
+
+  <span class="comment"># ...</span>
+<span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>But we could also not deal with the subarrays:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+</pre></td>
+  <td class="code"><pre>offsets = [[<span class="integer">0</span>, <span class="integer">1</span>], [<span class="integer">1</span>, <span class="integer">1</span>], [<span class="integer">0</span>, <span class="integer">-1</span>], [<span class="integer">-1</span>, <span class="integer">-1</span>]]
+offsets.each <span class="keyword">do</span> |offset_x, offset_y|
+  new_x, new_y = x + offset_x, y + offset_y
+
+  <span class="comment"># ...</span>
+<span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>This is trivial here, but allows for more expressive code. In the latter, it is clear that each element of <code>offset</code> is not just an element, but is a container, and in that the first element is the horizontal offset, and the second is the vertical offset.</p>
+
+<p>Further, we can have other nesting scenarios. One that comes to mind as neither unreasonable nor uncommon would be a <code>Hash</code> containing location data:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+</pre></td>
+  <td class="code"><pre>locations = { <span class="symbol">:a</span> =&gt; [<span class="integer">2</span>, <span class="integer">5</span>], <span class="symbol">:b</span> =&gt; [<span class="integer">6</span>, <span class="integer">8</span>] }
+<span class="comment"># or = { a: [2, 5], b: [6, 8] }</span>
+
+<span class="comment"># get all that are beyond (4, 4)</span>
+far_locations = locations.select <span class="keyword">do</span> |name, (x, y)|
+  x &gt; <span class="integer">4</span> &amp;&amp; y &gt; <span class="integer">4</span>
+<span class="keyword">end</span>
+
+p far_locations
+<span class="comment"># =&gt; {:b=&gt;[6, 8]}</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>Excellent! Expressive!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -510,6 +718,14 @@ To These, I would like to add one idea that is not really mentioned in _Design P
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/blog/2013/12/01/inheritance/">Inheritance vs. Mixins</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/blog/2013/12/01/iterators/">Iterators and Parameter-passing</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/blog/2013/11/30/idioms/">Idioms and Habits</a>
       </li>
     
@@ -519,14 +735,6 @@ To These, I would like to add one idea that is not really mentioned in _Design P
     
       <li class="post">
         <a href="/blog/blog/2013/11/30/string-concatenation/">String Concatenation</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/blog/2013/11/30/debugging/">Debugging</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/blog/2013/11/29/coupling/">Coupling</a>
       </li>
     
   </ul>

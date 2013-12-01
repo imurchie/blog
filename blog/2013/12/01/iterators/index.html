@@ -5,20 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>String Concatenation - Random Thoughts</title>
+  <title>Iterators and Parameter-passing - Random Thoughts</title>
   <meta name="author" content="Isaac Murchie">
 
   
-  <meta name="description" content="The literature says that String#&lt;&lt; is preferable to String#+. Why? One metric is speed. The following Ruby code snippet: 1
-2
-3
-4
-5
-6
-7
-8
-9
-10 &hellip;">
+  <meta name="description" content="While pairing with people it has been a surprise that it is not generally known that Ruby will decompose subarrays when passing parameters in &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -27,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://imurchie.github.io/blog/blog/2013/11/30/string-concatenation">
+  <link rel="canonical" href="http://imurchie.github.io/blog/blog/2013/12/01/iterators">
   <link href="/blog/favicon.png" rel="icon">
   <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/blog/atom.xml" rel="alternate" title="Random Thoughts" type="application/atom+xml">
@@ -77,7 +68,7 @@
   
   <header>
     
-      <h1 class="entry-title">String Concatenation</h1>
+      <h1 class="entry-title">Iterators and Parameter-passing</h1>
     
     
       <p class="meta">
@@ -93,14 +84,62 @@
   
 
 
-<time datetime="2013-11-30T08:08:28-08:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
+<time datetime="2013-12-01T13:06:59-08:00" pubdate data-updated="true">Dec 1<span>st</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>The literature says that <code>String#&lt;&lt;</code> is preferable to <code>String#+</code>. Why? One metric is speed. The following Ruby code snippet:</p>
+<div class="entry-content"><p>While pairing with people it has been a surprise that it is not generally known that Ruby will decompose subarrays when passing parameters in iterators. That is, for instance, when modelling the movement of a rook in chess, we could have the code:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+</pre></td>
+  <td class="code"><pre><span class="comment"># offsets from the initial position, (x, y)</span>
+offsets = [[<span class="integer">0</span>, <span class="integer">1</span>], [<span class="integer">1</span>, <span class="integer">1</span>], [<span class="integer">0</span>, <span class="integer">-1</span>], [<span class="integer">-1</span>, <span class="integer">-1</span>]]
+offsets.each <span class="keyword">do</span> |offset|
+  offset_x = offset[<span class="integer">0</span>]
+  offset_y = offset[<span class="integer">1</span>]
+  new_x, new_y = x + offset_x, y + offset_y
+
+  <span class="comment"># ...</span>
+<span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>But we could also not deal with the subarrays:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+</pre></td>
+  <td class="code"><pre>offsets = [[<span class="integer">0</span>, <span class="integer">1</span>], [<span class="integer">1</span>, <span class="integer">1</span>], [<span class="integer">0</span>, <span class="integer">-1</span>], [<span class="integer">-1</span>, <span class="integer">-1</span>]]
+offsets.each <span class="keyword">do</span> |offset_x, offset_y|
+  new_x, new_y = x + offset_x, y + offset_y
+
+  <span class="comment"># ...</span>
+<span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>This is trivial here, but allows for more expressive code. In the latter, it is clear that each element of <code>offset</code> is not just an element, but is a container, and in that the first element is the horizontal offset, and the second is the vertical offset.</p>
+
+<p>Further, we can have other nesting scenarios. One that comes to mind as neither unreasonable nor uncommon would be a <code>Hash</code> containing location data:</p>
 
 <div><table class="CodeRay"><tr>
   <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
@@ -114,35 +153,21 @@
 <a href="#n9" name="n9">9</a>
 <strong><a href="#n10" name="n10">10</a></strong>
 </pre></td>
-  <td class="code"><pre><span class="constant">Benchmark</span>.bm <span class="keyword">do</span> |b|
-  b.report(<span class="string"><span class="delimiter">&quot;</span><span class="content">+:  </span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span>
-    string = <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
-    <span class="integer">100_000</span>.times { string += <span class="string"><span class="delimiter">&quot;</span><span class="content">another</span><span class="delimiter">&quot;</span></span> }
-  <span class="keyword">end</span>
-  b.report(<span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;&lt;: </span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span>
-    string = <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
-    <span class="integer">100_000</span>.times { string &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">another</span><span class="delimiter">&quot;</span></span> }
-  <span class="keyword">end</span>
+  <td class="code"><pre>locations = { <span class="symbol">:a</span> =&gt; [<span class="integer">2</span>, <span class="integer">5</span>], <span class="symbol">:b</span> =&gt; [<span class="integer">6</span>, <span class="integer">8</span>] }
+<span class="comment"># or = { a: [2, 5], b: [6, 8] }</span>
+
+<span class="comment"># get all that are beyond (4, 4)</span>
+far_locations = locations.select <span class="keyword">do</span> |name, (x, y)|
+  x &gt; <span class="integer">4</span> &amp;&amp; y &gt; <span class="integer">4</span>
 <span class="keyword">end</span>
+
+p far_locations
+<span class="comment"># =&gt; {:b=&gt;[6, 8]}</span>
 </pre></td>
 </tr></table>
 </div>
 
-<p>Yields the following data:</p>
-
-<div><table class="CodeRay"><tr>
-  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
-<a href="#n2" name="n2">2</a>
-<a href="#n3" name="n3">3</a>
-</pre></td>
-  <td class="code"><pre>      user       system    total       real
-+:    8.960000   2.750000  11.710000 ( 11.735344)
-&lt;&lt;:   0.020000   0.000000   0.020000 (  0.019966)
-</pre></td>
-</tr></table>
-</div>
-
-<p>So it appears that concatenation with the <code>&lt;&lt;</code> method is much faster. (As a side note, <code>String#concat</code> and <code>String#&lt;&lt;</code> are aliases.)</p>
+<p>Excellent! Expressive!</p>
 </div>
 
 
@@ -165,7 +190,7 @@
   
 
 
-<time datetime="2013-11-30T08:08:28-08:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
+<time datetime="2013-12-01T13:06:59-08:00" pubdate data-updated="true">Dec 1<span>st</span>, 2013</time>
       
 
 
@@ -173,7 +198,7 @@
     
       <div class="sharing">
   
-  <a href="/blog//twitter.com/share" class="twitter-share-button" data-url="http://imurchie.github.io/blog/blog/2013/11/30/string-concatenation/" data-via="" data-counturl="http://imurchie.github.io/blog/blog/2013/11/30/string-concatenation/" >Tweet</a>
+  <a href="/blog//twitter.com/share" class="twitter-share-button" data-url="http://imurchie.github.io/blog/blog/2013/12/01/iterators/" data-via="" data-counturl="http://imurchie.github.io/blog/blog/2013/12/01/iterators/" >Tweet</a>
   
   
   
@@ -182,10 +207,10 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/blog/2013/11/30/debugging/" title="Previous Post: Debugging">&laquo; Debugging</a>
+        <a class="basic-alignment left" href="/blog/blog/2013/11/30/idioms/" title="Previous Post: Idioms and Habits">&laquo; Idioms and Habits</a>
       
       
-        <a class="basic-alignment right" href="/blog/blog/2013/11/30/block/" title="Next Post: Blocks, Procs, Lambdas, Methods">Blocks, Procs, Lambdas, Methods &raquo;</a>
+        <a class="basic-alignment right" href="/blog/blog/2013/12/01/inheritance/" title="Next Post: Inheritance vs. Mixins">Inheritance vs. Mixins &raquo;</a>
       
     </p>
   </footer>
