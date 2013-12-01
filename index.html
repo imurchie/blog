@@ -275,16 +275,16 @@ array.each_with_index <span class="keyword">do</span> |el, i|
 <a href="#n9" name="n9">9</a>
 <strong><a href="#n10" name="n10">10</a></strong>
 </pre></td>
-  <td class="code"><pre>        <span class="constant">Benchmark</span>.bm <span class="keyword">do</span> |b|
-          b.report(<span class="string"><span class="delimiter">&quot;</span><span class="content">+:  </span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span>
-            string = <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
-            <span class="integer">100_000</span>.times { string += <span class="string"><span class="delimiter">&quot;</span><span class="content">another</span><span class="delimiter">&quot;</span></span> }
-          <span class="keyword">end</span>
-          b.report(<span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;&lt;: </span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span>
-            string = <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
-            <span class="integer">100_000</span>.times { string &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">another</span><span class="delimiter">&quot;</span></span> }
-          <span class="keyword">end</span>
-        <span class="keyword">end</span>
+  <td class="code"><pre><span class="constant">Benchmark</span>.bm <span class="keyword">do</span> |b|
+  b.report(<span class="string"><span class="delimiter">&quot;</span><span class="content">+:  </span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span>
+    string = <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
+    <span class="integer">100_000</span>.times { string += <span class="string"><span class="delimiter">&quot;</span><span class="content">another</span><span class="delimiter">&quot;</span></span> }
+  <span class="keyword">end</span>
+  b.report(<span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;&lt;: </span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span>
+    string = <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
+    <span class="integer">100_000</span>.times { string &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">another</span><span class="delimiter">&quot;</span></span> }
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
 </pre></td>
 </tr></table>
 </div>
@@ -296,9 +296,9 @@ array.each_with_index <span class="keyword">do</span> |el, i|
 <a href="#n2" name="n2">2</a>
 <a href="#n3" name="n3">3</a>
 </pre></td>
-  <td class="code"><pre>           user     system      total        real
-        +:    8.960000   2.750000  11.710000 ( 11.735344)
-        &lt;&lt;:   0.020000   0.000000   0.020000 (  0.019966)
+  <td class="code"><pre>      user       system    total       real
++:    8.960000   2.750000  11.710000 ( 11.735344)
+&lt;&lt;:   0.020000   0.000000   0.020000 (  0.019966)
 </pre></td>
 </tr></table>
 </div>
