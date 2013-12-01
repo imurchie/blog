@@ -117,16 +117,30 @@
 9.  Identity: sharing an object
 In all these cases, when the related elements are in different classes (and often within the same class), this is moving toward bad (though some are unavoidable… things need to be named and need to be referred to by those names). The first five are <em>static</em>, depending only on how they are declared and defined. The last four are dynamic, coming about in the running of the software.</p>
 
-<p lang="ruby">Some major sources of coupling include parameter lists that are more than 2–3 elements long,
-~~~
-        def many_parametered_method(name, date, signup_date, mothers_maiden_name)
-~~~</p>
-<p>Which is easily misused, and difficult to change. This is connascence of Name, Position, Meaning, and Type. However, changing this to an associative array makes it easier for callers to get things right,
-~~~
-        def method(params = {})</p>
+<p>Some major sources of coupling include parameter lists that are more than 2–3 elements long,</p>
 
-<pre lang="ruby"><code>    method({ name: "Isaac", date: "18/9/13", signup_date: "18/9/13", mothers_maiden_name: "Something" }) ~~~
-</code></pre>
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">def</span> <span class="function">many_parametered_method</span>(name, date, signup_date, mothers_maiden_name)
+</pre></td>
+</tr></table>
+</div>
+
+<p>Which is easily misused, and difficult to change. This is connascence of Name, Position, Meaning, and Type. However, changing this to an associative array makes it easier for callers to get things right,</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+</pre></td>
+  <td class="code"><pre>        <span class="keyword">def</span> <span class="function">method</span>(params = {})
+
+        method({ <span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Isaac</span><span class="delimiter">&quot;</span></span>, <span class="key">date</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">18/9/13</span><span class="delimiter">&quot;</span></span>, <span class="key">signup_date</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">18/9/13</span><span class="delimiter">&quot;</span></span>, <span class="key">mothers_maiden_name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Something</span><span class="delimiter">&quot;</span></span> })
+</pre></td>
+</tr></table>
+</div>
+
 <p>Now the order doesn’t matter, though we still have coupling of name (is it <code>name</code> or <code>fullname</code>).</p>
 
 <p>In a different realm, there is a similar concept called “supervenience”, such that:</p>

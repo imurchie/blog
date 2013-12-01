@@ -4,7 +4,7 @@
   <title><![CDATA[Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-12-01T12:51:12-08:00</updated>
+  <updated>2013-12-01T13:00:47-08:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -123,93 +123,180 @@ array.each_with_index <span class="keyword">do</span> |el, i|
 
 <p><em>Blocks</em></p>
 
-<p>Blocks are the oddball in that they are not objects. They are anonymous bits of code that get sent to methods to be used in some way. Left to their own decides they remain anonymous:
-~~~
-        def block_caller
-          yield
-        end</p>
+<p>Blocks are the oddball in that they are not objects. They are anonymous bits of code that get sent to methods to be used in some way. Left to their own decides they remain anonymous:</p>
 
-<pre lang="ruby"><code>    block_caller { puts "in a block" }
-    # =&gt; in a block ~~~
-</code></pre>
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">def</span> <span class="function">block_caller</span>
+  <span class="keyword">yield</span>
+<span class="keyword">end</span>
+
+block_caller { puts <span class="string"><span class="delimiter">&quot;</span><span class="content">in a block</span><span class="delimiter">&quot;</span></span> }
+<span class="comment"># =&gt; in a block</span>
+</pre></td>
+</tr></table>
+</div>
+
 <p>Here there are no named references to the block sent in to <code>block_caller</code>, just the keyword <code>yield</code> which yields control to any block the method knows of. Outside the method there is no way to access the code in that block.</p>
 
-<p lang="ruby">Blocks are probably the most common form of this sort of behaviour in Ruby. Within both the Ruby core and the standard library there are a miriad methods that use blocks to customize their own behaviour. So, sorting an <code>Array</code> will, on its own, be in ascending order of the. But it can take a block, the result of running of which will determine how the sorting occurs:
-~~~
-        irb(main):011:0&gt; array = [3, 4, 2, 5, 1]
-        =&gt; [3, 4, 2, 5, 1]
-        irb(main):012:0&gt; array.sort
-        =&gt; [1, 2, 3, 4, 5]
-        irb(main):013:0&gt; array.sort { |a, b| b &lt;=&gt; a }
-        =&gt; [5, 4, 3, 2, 1]
-~~~</p>
+<p>Blocks are probably the most common form of this sort of behaviour in Ruby. Within both the Ruby core and the standard library there are a miriad methods that use blocks to customize their own behaviour. So, sorting an <code>Array</code> will, on its own, be in ascending order of the. But it can take a block, the result of running of which will determine how the sorting occurs:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+</pre></td>
+  <td class="code"><pre>irb(main):<span class="integer">011</span>:<span class="integer">0</span>&gt; array = [<span class="integer">3</span>, <span class="integer">4</span>, <span class="integer">2</span>, <span class="integer">5</span>, <span class="integer">1</span>]
+=&gt; [<span class="integer">3</span>, <span class="integer">4</span>, <span class="integer">2</span>, <span class="integer">5</span>, <span class="integer">1</span>]
+irb(main):<span class="integer">012</span>:<span class="integer">0</span>&gt; array.sort
+=&gt; [<span class="integer">1</span>, <span class="integer">2</span>, <span class="integer">3</span>, <span class="integer">4</span>, <span class="integer">5</span>]
+irb(main):<span class="integer">013</span>:<span class="integer">0</span>&gt; array.sort { |a, b| b &lt;=&gt; a }
+=&gt; [<span class="integer">5</span>, <span class="integer">4</span>, <span class="integer">3</span>, <span class="integer">2</span>, <span class="integer">1</span>]
+</pre></td>
+</tr></table>
+</div>
+
 <p>Tada!</p>
 
 <p><em>Procs</em></p>
 
-<p><code>Proc</code>s act much like blocks, but are fullfledged objects, and can be referenced and manipulated like any other object. Moreover, blocks and <code>Proc</code>s can be interchanged while calling methods, using the <code>&amp;</code> keyword.
-~~~
-        def block_caller
-          yield(“test”)
-        end</p>
+<p><code>Proc</code>s act much like blocks, but are fullfledged objects, and can be referenced and manipulated like any other object. Moreover, blocks and <code>Proc</code>s can be interchanged while calling methods, using the <code>&amp;</code> keyword.</p>
 
-<pre lang="ruby"><code>    def proc_block_caller(&amp;prc)
-      prc.call("test")
-    end
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+<a href="#n16" name="n16">16</a>
+<a href="#n17" name="n17">17</a>
+<a href="#n18" name="n18">18</a>
+<a href="#n19" name="n19">19</a>
+<strong><a href="#n20" name="n20">20</a></strong>
+<a href="#n21" name="n21">21</a>
+<a href="#n22" name="n22">22</a>
+<a href="#n23" name="n23">23</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">def</span> <span class="function">block_caller</span>
+  <span class="keyword">yield</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>)
+<span class="keyword">end</span>
 
-    def proc_caller(prc)
-      prc.call("test")
-    end
+<span class="keyword">def</span> <span class="function">proc_block_caller</span>(&amp;prc)
+  prc.call(<span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>)
+<span class="keyword">end</span>
 
-    prc = Proc.new { |input| puts input }
-    # or: prc = proc { |input| puts input }
+<span class="keyword">def</span> <span class="function">proc_caller</span>(prc)
+  prc.call(<span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>)
+<span class="keyword">end</span>
 
-    block_caller(&amp;prc)
-    # =&gt; test
+prc = <span class="constant">Proc</span>.new { |input| puts input }
+<span class="comment"># or: prc = proc { |input| puts input }</span>
 
-    proc_block_caller { |input| puts input }
-    # =&gt; test
+block_caller(&amp;prc)
+<span class="comment"># =&gt; test</span>
 
-    proc_caller(prc)
-    # =&gt; test ~~~
-</code></pre>
+proc_block_caller { |input| puts input }
+<span class="comment"># =&gt; test</span>
+
+proc_caller(prc)
+<span class="comment"># =&gt; test</span>
+</pre></td>
+</tr></table>
+</div>
+
 <p>In the first, we send a <code>Proc</code> as a block to the method, then a block as a <code>proc</code>, and finally a <code>Proc</code> as a normal argument to the method. All three result in the same functionality.</p>
 
-<p>Further, both blocks and <code>Proc</code>s are allocated on the heap, and so any return statement executed within them will return <em>from the context in which they are called</em>, not just from themselves:
-~~~
-        def yielding_method
-          puts “yielding to block”
-          yield
-          puts “yielded to block”
-        end</p>
+<p>Further, both blocks and <code>Proc</code>s are allocated on the heap, and so any return statement executed within them will return <em>from the context in which they are called</em>, not just from themselves:</p>
 
-<pre lang="ruby"><code>    yielding_method { puts "in block" }
-    # =&gt; yielding to block
-    # =&gt; in block
-    # =&gt; yielded to block
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+<a href="#n16" name="n16">16</a>
+<a href="#n17" name="n17">17</a>
+<a href="#n18" name="n18">18</a>
+<a href="#n19" name="n19">19</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">def</span> <span class="function">yielding_method</span>
+  puts <span class="string"><span class="delimiter">&quot;</span><span class="content">yielding to block</span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">yield</span>
+  puts <span class="string"><span class="delimiter">&quot;</span><span class="content">yielded to block</span><span class="delimiter">&quot;</span></span>
+<span class="keyword">end</span>
 
-    yielding_method { puts "in block"; return true }
-    # =&gt; yielding to block
-    # =&gt; in block
+yielding_method { puts <span class="string"><span class="delimiter">&quot;</span><span class="content">in block</span><span class="delimiter">&quot;</span></span> }
+<span class="comment"># =&gt; yielding to block</span>
+<span class="comment"># =&gt; in block</span>
+<span class="comment"># =&gt; yielded to block</span>
 
-    # in the default scope
-    Proc.new { return true }.call
-    # =&gt; LocalJumpError: unexpected return
-    # =&gt;    ... ~~~
-</code></pre>
+yielding_method { puts <span class="string"><span class="delimiter">&quot;</span><span class="content">in block</span><span class="delimiter">&quot;</span></span>; <span class="keyword">return</span> <span class="predefined-constant">true</span> }
+<span class="comment"># =&gt; yielding to block</span>
+<span class="comment"># =&gt; in block</span>
 
-<p>On the same lines, neither blocks nor <code>Proc</code>s do any checking of the arguments being passed in.
-~~~
-        prc = Proc.new { |arg1, arg2| puts “#{arg1.inspect}, #{arg2.inspect}” }
-        prc.call(“first argument”, “second argument”)
-        # =&gt; “first argument”, “second argument”</p>
+<span class="comment"># in the default scope</span>
+<span class="constant">Proc</span>.new { <span class="keyword">return</span> <span class="predefined-constant">true</span> }.call
+<span class="comment"># =&gt; LocalJumpError: unexpected return</span>
+<span class="comment"># =&gt;    ...</span>
+</pre></td>
+</tr></table>
+</div>
 
-<pre lang="ruby"><code>    prc.call("first argument")
-    # =&gt; "first argument", nil
+<p>On the same lines, neither blocks nor <code>Proc</code>s do any checking of the arguments being passed in.</p>
 
-    prc.call("first argument", "second argument", "third argument")
-    # =&gt; "first argument", "second argument" ~~~
-</code></pre>
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+</pre></td>
+  <td class="code"><pre>prc = <span class="constant">Proc</span>.new { |arg1, arg2| puts <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">#{</span>arg1.inspect<span class="inline-delimiter">}</span></span><span class="content">, </span><span class="inline"><span class="inline-delimiter">#{</span>arg2.inspect<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> }
+prc.call(<span class="string"><span class="delimiter">&quot;</span><span class="content">first argument</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">second argument</span><span class="delimiter">&quot;</span></span>)
+<span class="comment"># =&gt; &quot;first argument&quot;, &quot;second argument&quot;</span>
+
+prc.call(<span class="string"><span class="delimiter">&quot;</span><span class="content">first argument</span><span class="delimiter">&quot;</span></span>)
+<span class="comment"># =&gt; &quot;first argument&quot;, nil</span>
+
+prc.call(<span class="string"><span class="delimiter">&quot;</span><span class="content">first argument</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">second argument</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">third argument</span><span class="delimiter">&quot;</span></span>)
+<span class="comment"># =&gt; &quot;first argument&quot;, &quot;second argument&quot;</span>
+</pre></td>
+</tr></table>
+</div>
+
 <p>See <code>Lambda</code> below for more details, and a contrastive view.</p>
 
 <p><em>Lambdas</em></p>
@@ -218,59 +305,102 @@ array.each_with_index <span class="keyword">do</span> |el, i|
 
 <p>In Ruby, Lambdas behave like methods in ways that blocks and procs don’t. The two most important aspects of this functionality are</p>
 
-<ol lang="ruby">
-  <li>
-    <p>Stack memory vs. heap memory: Like full-fledged methods, Lambdas get space allocated on the call stack, rather than in the heap. In normal operation, this manifests itself in the ability of Lambdas to make explicit returns with method-like results.
-~~~
-        def yielding_method
-          puts “yielding to block”
-          yield
-          puts “yielded to block”
-        end</p>
-
-    <pre><code>    l = lambda { puts "in lambda"; return true }
-    # or: l = -&gt; { ... }
-
-    yielding_method &amp;l
-    # =&gt; yielding to block
-    # =&gt; in lambda
-    # =&gt; yielded to block ~~~
-</code></pre>
-  </li>
+<ol>
+  <li>Stack memory vs. heap memory: Like full-fledged methods, Lambdas get space allocated on the call stack, rather than in the heap. In normal operation, this manifests itself in the ability of Lambdas to make explicit returns with method-like results.</li>
 </ol>
-<ol lang="ruby">
-  <li>
-    <p>Arity checking: Also like full-fledged methods, lambdas get checked to make sure the arguments are of the necessary types, given the parameter list.
-~~~
-        l = lambda { |arg1, arg2| puts “#{arg1}, #{arg2}” }
-        l.call(“first argument”, “second argument”)
-        # =&gt; first argument, second argument</p>
 
-    <pre><code>    l.call("first argument")
-    # -&gt; ArgumentError: wrong number of arguments (1 for 2)
-    # -&gt;     ...
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">def</span> <span class="function">yielding_method</span>
+  puts <span class="string"><span class="delimiter">&quot;</span><span class="content">yielding to block</span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">yield</span>
+  puts <span class="string"><span class="delimiter">&quot;</span><span class="content">yielded to block</span><span class="delimiter">&quot;</span></span>
+<span class="keyword">end</span>
 
-    l.call("first argument", "second argument", "third argument")
-    # -&gt; ArgumentError: wrong number of arguments (3 for 2)
-    # -&gt;     ... ~~~
-</code></pre>
-  </li>
+l = lambda { puts <span class="string"><span class="delimiter">&quot;</span><span class="content">in lambda</span><span class="delimiter">&quot;</span></span>; <span class="keyword">return</span> <span class="predefined-constant">true</span> }
+<span class="comment"># or: l = -&gt; { ... }</span>
+
+yielding_method &amp;l
+<span class="comment"># =&gt; yielding to block</span>
+<span class="comment"># =&gt; in lambda</span>
+<span class="comment"># =&gt; yielded to block</span>
+</pre></td>
+</tr></table>
+</div>
+
+<ol>
+  <li>Arity checking: Also like full-fledged methods, lambdas get checked to make sure the arguments are of the necessary types, given the parameter list.</li>
 </ol>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+</pre></td>
+  <td class="code"><pre>l = lambda { |arg1, arg2| puts <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">#{</span>arg1<span class="inline-delimiter">}</span></span><span class="content">, </span><span class="inline"><span class="inline-delimiter">#{</span>arg2<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> }
+l.call(<span class="string"><span class="delimiter">&quot;</span><span class="content">first argument</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">second argument</span><span class="delimiter">&quot;</span></span>)
+<span class="comment"># =&gt; first argument, second argument</span>
+
+l.call(<span class="string"><span class="delimiter">&quot;</span><span class="content">first argument</span><span class="delimiter">&quot;</span></span>)
+<span class="comment"># -&gt; ArgumentError: wrong number of arguments (1 for 2)</span>
+<span class="comment"># -&gt;     ...</span>
+
+l.call(<span class="string"><span class="delimiter">&quot;</span><span class="content">first argument</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">second argument</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">third argument</span><span class="delimiter">&quot;</span></span>)
+<span class="comment"># -&gt; ArgumentError: wrong number of arguments (3 for 2)</span>
+<span class="comment"># -&gt;     ...</span>
+</pre></td>
+</tr></table>
+</div>
+
 <p><code>Lambda</code>s are, however, much less commonly used in Ruby development.</p>
 
 <p><em>Methods</em></p>
 
-<p>The last type of callable object is the <code>Method</code>. Normally, methods are of a different sort than blocks, <code>Proc</code>s, or <code>Lambda</code>s, since they are tied to classes (even in the case of singleton methods, which are part of a singleton (or “eigen-“) class). But they can be freed from a class and passed as a callable object in their own right. Calling the <code>Object#method</code> method returns a <code>Method</code> object that can be passed around and used much like a <code>Proc</code>.
-~~~
-        meth = “a lowercase string”.method(:upcase)
-        meth.call
-        # =&gt; A LOWERCASE STRING</p>
+<p>The last type of callable object is the <code>Method</code>. Normally, methods are of a different sort than blocks, <code>Proc</code>s, or <code>Lambda</code>s, since they are tied to classes (even in the case of singleton methods, which are part of a singleton (or “eigen-“) class). But they can be freed from a class and passed as a callable object in their own right. Calling the <code>Object#method</code> method returns a <code>Method</code> object that can be passed around and used much like a <code>Proc</code>.</p>
 
-<pre lang="ruby"><code>    # a Proc can be obtained from a Method
-    prc = meth.to_proc
-    prc.call
-    # =&gt; A LOWERCASE STRING ~~~
-</code></pre>
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+</pre></td>
+  <td class="code"><pre>meth = <span class="string"><span class="delimiter">&quot;</span><span class="content">a lowercase string</span><span class="delimiter">&quot;</span></span>.method(<span class="symbol">:upcase</span>)
+meth.call
+<span class="comment"># =&gt; A LOWERCASE STRING</span>
+
+<span class="comment"># a Proc can be obtained from a Method</span>
+prc = meth.to_proc
+prc.call
+<span class="comment"># =&gt; A LOWERCASE STRING</span>
+</pre></td>
+</tr></table>
+</div>
+
 <p>In all, these objects (and non-objects, in the case of blocks) are part of the dynamicity of Ruby as a programming language. They are also one of the most interesting features of the language, importing as they do functional programming techniques to the object-oriented world.</p>
 
 ]]></content>
@@ -281,26 +411,49 @@ array.each_with_index <span class="keyword">do</span> |el, i|
     <link href="http://imurchie.github.io/blog/blog/2013/11/30/string-concatenation/"/>
     <updated>2013-11-30T08:08:28-08:00</updated>
     <id>http://imurchie.github.io/blog/blog/2013/11/30/string-concatenation</id>
-    <content type="html"><![CDATA[<p lang="ruby">The literature says that <code>String#&lt;&lt;</code> is preferable to <code>String#+</code>. Why? One metric is speed. The following Ruby code snippet:
-~~~
-        Benchmark.bm do |b|
-          b.report(“+:  “) do
-            string = “test”
-            100_000.times { string += “another” }
-          end
-          b.report(“«: “) do
-            string = “test”
-            100_000.times { string « “another” }
-          end
-        end
-~~~</p>
-<p>Yields the following data:
-~~~
-           user     system      total        real
+    <content type="html"><![CDATA[<p>The literature says that <code>String#&lt;&lt;</code> is preferable to <code>String#+</code>. Why? One metric is speed. The following Ruby code snippet:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+</pre></td>
+  <td class="code"><pre>        <span class="constant">Benchmark</span>.bm <span class="keyword">do</span> |b|
+          b.report(<span class="string"><span class="delimiter">&quot;</span><span class="content">+:  </span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span>
+            string = <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
+            <span class="integer">100_000</span>.times { string += <span class="string"><span class="delimiter">&quot;</span><span class="content">another</span><span class="delimiter">&quot;</span></span> }
+          <span class="keyword">end</span>
+          b.report(<span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;&lt;: </span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span>
+            string = <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
+            <span class="integer">100_000</span>.times { string &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">another</span><span class="delimiter">&quot;</span></span> }
+          <span class="keyword">end</span>
+        <span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>Yields the following data:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+</pre></td>
+  <td class="code"><pre>           user     system      total        real
         +:    8.960000   2.750000  11.710000 ( 11.735344)
-        «:   0.020000   0.000000   0.020000 (  0.019966)
-~~~
-So it appears that concatenation with the <code>&lt;&lt;</code> method is much faster. (As a side note, <code>String#concat</code> and <code>String#&lt;&lt;</code> are aliases.)</p>
+        &lt;&lt;:   0.020000   0.000000   0.020000 (  0.019966)
+</pre></td>
+</tr></table>
+</div>
+
+<p>So it appears that concatenation with the <code>&lt;&lt;</code> method is much faster. (As a side note, <code>String#concat</code> and <code>String#&lt;&lt;</code> are aliases.)</p>
 ]]></content>
   </entry>
   
@@ -348,16 +501,30 @@ So it appears that concatenation with the <code>&lt;&lt;</code> method is much f
 9.  Identity: sharing an object
 In all these cases, when the related elements are in different classes (and often within the same class), this is moving toward bad (though some are unavoidable… things need to be named and need to be referred to by those names). The first five are <em>static</em>, depending only on how they are declared and defined. The last four are dynamic, coming about in the running of the software.</p>
 
-<p lang="ruby">Some major sources of coupling include parameter lists that are more than 2–3 elements long,
-~~~
-        def many_parametered_method(name, date, signup_date, mothers_maiden_name)
-~~~</p>
-<p>Which is easily misused, and difficult to change. This is connascence of Name, Position, Meaning, and Type. However, changing this to an associative array makes it easier for callers to get things right,
-~~~
-        def method(params = {})</p>
+<p>Some major sources of coupling include parameter lists that are more than 2–3 elements long,</p>
 
-<pre lang="ruby"><code>    method({ name: "Isaac", date: "18/9/13", signup_date: "18/9/13", mothers_maiden_name: "Something" }) ~~~
-</code></pre>
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">def</span> <span class="function">many_parametered_method</span>(name, date, signup_date, mothers_maiden_name)
+</pre></td>
+</tr></table>
+</div>
+
+<p>Which is easily misused, and difficult to change. This is connascence of Name, Position, Meaning, and Type. However, changing this to an associative array makes it easier for callers to get things right,</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+</pre></td>
+  <td class="code"><pre>        <span class="keyword">def</span> <span class="function">method</span>(params = {})
+
+        method({ <span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Isaac</span><span class="delimiter">&quot;</span></span>, <span class="key">date</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">18/9/13</span><span class="delimiter">&quot;</span></span>, <span class="key">signup_date</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">18/9/13</span><span class="delimiter">&quot;</span></span>, <span class="key">mothers_maiden_name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Something</span><span class="delimiter">&quot;</span></span> })
+</pre></td>
+</tr></table>
+</div>
+
 <p>Now the order doesn’t matter, though we still have coupling of name (is it <code>name</code> or <code>fullname</code>).</p>
 
 <p>In a different realm, there is a similar concept called “supervenience”, such that:</p>
@@ -421,7 +588,7 @@ To These, I would like to add one idea that is not really mentioned in _Design P
 
 <!-- more -->
 
-<p>So the nominitive, in Sanskrit grammar, conveys most prominently (grammatical <em>dvandva_s functioning as ordered-by-preference) the bare meaning of the lexical stem. And this is what Ruby <code>Symbol</code>s do! They convey information only insofar as they are named usefully. Their main purpose is as… well… _symbols</em>.</p>
+<p>So the nominitive, in Sanskrit grammar, conveys most prominently (grammatically, a <em>dvandva</em> functioning as ordered-by-preference) the bare meaning of the lexical stem. And this is what Ruby <code>Symbol</code>s do! They convey information only insofar as they are named usefully. Their main purpose is as… well… <em>symbols</em>.</p>
 
 <p>One thing of note is that within a Ruby interpretter, there is only ever <em>one</em> copy of any given <code lang="ruby">Symbol</code>. So checking for equality is fast, the equality being directly testable through the <code lang="ruby">Symbol</code>s identity.</p>
 
