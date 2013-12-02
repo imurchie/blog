@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Design - Random Thoughts</title>
+  <title> - Random Thoughts</title>
   <meta name="author" content="Isaac Murchie">
 
   
-  <meta name="description" content="Russ Olson, in his book Design Patterns in Ruby (an abridged “Gang of Four” book, with implementations in Ruby), he lays out the principles that &hellip;">
+  <meta name="description" content="In a small application, poor design is survivable. Even if everything is connected to everything else, if you can hold it all in your head at once &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://imurchie.github.io/blog/blog/2013/11/29/design">
+  <link rel="canonical" href="http://imurchie.github.io/blog/blog/2013/12/02/design">
   <link href="/blog/favicon.png" rel="icon">
   <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/blog/atom.xml" rel="alternate" title="Random Thoughts" type="application/atom+xml">
@@ -68,7 +68,7 @@
   
   <header>
     
-      <h1 class="entry-title">Design</h1>
+      <h1 class="entry-title"></h1>
     
     
       <p class="meta">
@@ -84,36 +84,18 @@
   
 
 
-<time datetime="2013-11-29T09:00:15-08:00" pubdate data-updated="true">Nov 29<span>th</span>, 2013</time>
+<time datetime="2013-12-02T09:15:39-08:00" pubdate data-updated="true">Dec 2<span>nd</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Russ Olson, in his book <em>Design Patterns in Ruby</em> (an abridged “Gang of Four” book, with implementations in Ruby), he lays out the principles that underly his approach, and which mesh well with the curriculum:</p>
-
-<blockquote>
-  <p>For me, these ideas boil down to four points:
-1.  Separate out the things that change from those that stay the same.
-2.  Program to an interface, not an implementation.
-3.  Prefer composition over inheritance.
-4.  Delegate, delegate, delegate.
-To These, I would like to add one idea that is not really mentioned in _Design Patterns, but that guides much of my own approach to building programs:
-5.  You ain’t gonna need it.</p>
+<div class="entry-content"><blockquote>
+  <p>In a small application, poor design is survivable. Even if everything is connected to everything else, if you can hold it all in your head at once you can still improve the application. The problem with poorly designed small applications is that if they are successful they grow up to be poorly designed big applications. They gradually become tar pits in which you fear to tread lest you sink without a trace. Changes that should be simple may cascade around the application, breaking code everywhere and requiring extensive rewriting. Tests are caught in the crossfire and begin to feel like a hindrance rather than a help.</p>
 </blockquote>
 
-<!-- more -->
-
-<p>The first four are identical to the guiding principles of the “Gang of Four.” In order to make robust software systems the places where things change should be identifiable, and ideally minimized (particularly in their public interface, so making a change does not effect, domino-like, other parts of the system). This relates directly to the idea of an interface (not of the C++/Java sort): the public facing parts of the class (or other object) should be as stable as possible, and it is more important to keep them functioning correctly. The implementation matters less, and what implementation is used might be decided using other considerations (e.g., efficiency, stability, auditability).</p>
-
-<p>The third part of this is an interesting one, and the subject of a recent blog post by <a href="http://words.steveklabnik.com/">Steve Klabnik</a>, <a href="http://words.steveklabnik.com/beware-subclassing-ruby-core-classes">“Beware subclassing Ruby core classes”</a>. Ruby only supports single inheritance, so inheriting from one class precludes doing so with another class. However, the central problem of inheritance is the tight coupling that comes about between the class and its superclass. Change the parent and the functionality of the child is suspect.</p>
-
-<p>The fourth point is just passing the responsibility to something else. This is key to the idea of <em>D.R.Y</em> (“Don’t Repeat Yourself”), since two elements that do the same thing can delegate to a third that actually does it.</p>
-
-<p>The final part of Olson’s discussion is part of our curriculum directly: If it is not necessary at this time, don’t build it. Speculation almost never gets it right. I’m reminded of Cory Doctorow’s position on science fiction writers:
-&gt; “I’m of the opinion that science fiction writers suck at predicting the future. We mostly go around describing the present in futuristic clothes - (such as) Mary Shelley, Bill Gibson, and many others.”
-&gt; <a href="http://3degree.ecu.edu.au/articles/1378">“Where is my flying car”</a></p>
+<p>— Sandi Metz. Pratical Object-Oriented Design in Ruby.</p>
 </div>
 
 
@@ -136,15 +118,21 @@ To These, I would like to add one idea that is not really mentioned in _Design P
   
 
 
-<time datetime="2013-11-29T09:00:15-08:00" pubdate data-updated="true">Nov 29<span>th</span>, 2013</time>
+<time datetime="2013-12-02T09:15:39-08:00" pubdate data-updated="true">Dec 2<span>nd</span>, 2013</time>
       
+
+<span class="categories">
+  
+    <a class='category' href='/blog/blog/categories/design/'>design,</a>, <a class='category' href='/blog/blog/categories/quotes/'>quotes</a>
+  
+</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="/blog//twitter.com/share" class="twitter-share-button" data-url="http://imurchie.github.io/blog/blog/2013/11/29/design/" data-via="" data-counturl="http://imurchie.github.io/blog/blog/2013/11/29/design/" >Tweet</a>
+  <a href="/blog//twitter.com/share" class="twitter-share-button" data-url="http://imurchie.github.io/blog/blog/2013/12/02/design/" data-via="" data-counturl="http://imurchie.github.io/blog/blog/2013/12/02/design/" >Tweet</a>
   
   
   
@@ -153,10 +141,8 @@ To These, I would like to add one idea that is not really mentioned in _Design P
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/blog/2013/11/28/ruby-symbols/" title="Previous Post: Ruby Symbols">&laquo; Ruby Symbols</a>
+        <a class="basic-alignment left" href="/blog/blog/2013/12/02/rspec/" title="Previous Post: RSpec, `expect` and `should`">&laquo; RSpec, `expect` and `should`</a>
       
-      
-        <a class="basic-alignment right" href="/blog/blog/2013/11/29/coupling/" title="Next Post: Coupling">Coupling &raquo;</a>
       
     </p>
   </footer>
