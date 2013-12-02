@@ -9,7 +9,7 @@
   <meta name="author" content="Isaac Murchie">
 
   
-  <meta name="description" content="In thinking through how we might change chess game to use a mixin model instead of an inheritance. Our main object model at the moment looks like: - &hellip;">
+  <meta name="description" content="No, not a Java interface, but concpetually very similar. Java’s interface is basically the specification of the public face of a class. Ruby doesn’t &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,223 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/blog/2013/12/01/interfaces/">Interfaces</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-01T16:20:13-08:00" pubdate data-updated="true">Dec 1<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>No, not a <a href="http://www.java.com/en/">Java</a> <a href="http://docs.oracle.com/javase/tutorial/java/concepts/interface.html"><code>interface</code></a>, but concpetually very similar. Java’s <code>interface</code> is basically the specification of the public face of a class. Ruby doesn’t have such a functionality explicitly built into it, though the design principle of writing to an “interface” still holds.</p>
+
+<p>A Ruby class should provide a set of <code>public</code> methods which are the behaviours that it can be held accountable for. Other methods that are used by the objects of the class, or its descendents, can be made
+<code>private</code> or <code>protected</code> in order to make them less accessible, and to signal that they are not supported, that there is no reasonable expectation of their being maintained throughout the development process.</p>
+
+<p>Ruby’s privacy markers are actually methods in the <a href="http://ruby-doc.org/core-1.9.3/Module.html"><code>Module</code></a> class (which is the superclass of <a href="http://ruby-doc.org/core-1.9.3/Class.html"><code>Class</code></a>, and so within the class hierarchy of every class we, as programmers, define in our code). Without any arguments they set the privacy level until the next time one is called. With arguments they set the privacy level for the arguments, which are <a href="http://ruby-doc.org/core-1.9.3/Symbol.html"><code>Symbol</code></a> objects referring to methods names. These can be any method named, no matter what their privacy status. So in a subclass we can change it:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+<a href="#n16" name="n16">16</a>
+<a href="#n17" name="n17">17</a>
+<a href="#n18" name="n18">18</a>
+<a href="#n19" name="n19">19</a>
+<strong><a href="#n20" name="n20">20</a></strong>
+<a href="#n21" name="n21">21</a>
+<a href="#n22" name="n22">22</a>
+<a href="#n23" name="n23">23</a>
+<a href="#n24" name="n24">24</a>
+<a href="#n25" name="n25">25</a>
+<a href="#n26" name="n26">26</a>
+<a href="#n27" name="n27">27</a>
+<a href="#n28" name="n28">28</a>
+<a href="#n29" name="n29">29</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">class</span> <span class="class">Test</span>
+  <span class="keyword">def</span> <span class="function">hi</span>
+    puts <span class="string"><span class="delimiter">&quot;</span><span class="content">hi</span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+
+  private
+    <span class="keyword">def</span> <span class="function">hello</span>
+      puts <span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+test = <span class="constant">Test</span>.new
+test.hi
+<span class="comment"># =&gt; hi</span>
+
+test.hello
+<span class="comment"># =&gt; NoMethodError: private method `hello' called for #&lt;Test:0x007fc2411c6578&gt;</span>
+<span class="comment"># =&gt;     ...</span>
+
+<span class="keyword">class</span> <span class="class">SubTest</span> &lt; <span class="constant">Test</span>
+  public(<span class="symbol">:hello</span>)
+<span class="keyword">end</span>
+
+test = <span class="constant">SubTest</span>.new
+test.hi
+<span class="comment"># =&gt; hi</span>
+
+test.hello
+<span class="comment"># =&gt; hello</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>The subclass here, <code>SubTest</code>, does nothing other than set the privacy of <code>Test#hello</code> to <code>public</code>. Then instances of <code>SubTest</code> have this method in their public interface.</p>
+
+<p>Another aspect of privacy in the Ruby object model is illustrated here. Unlike in Java, where <a href="http://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html"><code>private</code></a> means that instances of the class have access and nothing else, in Ruby subclasses can access <code>private</code> methods without any problems. Indeed, “private” in Ruby means that the interpretter will not allow the method to be called with an explicit receiver. So within a subclass, where superclass methods are accessed directly, private methods are available! (But beware: you still cannot use <code>self</code>, even if it amounts to the same thing!)</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+<a href="#n16" name="n16">16</a>
+<a href="#n17" name="n17">17</a>
+<a href="#n18" name="n18">18</a>
+<a href="#n19" name="n19">19</a>
+<strong><a href="#n20" name="n20">20</a></strong>
+<a href="#n21" name="n21">21</a>
+<a href="#n22" name="n22">22</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">class</span> <span class="class">Test</span>
+  <span class="keyword">def</span> <span class="function">hi</span>
+    hello
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">howdy</span>
+    <span class="predefined-constant">self</span>.hello
+  <span class="keyword">end</span>
+
+  private
+    <span class="keyword">def</span> <span class="function">hello</span>
+      puts <span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+test = <span class="constant">Test</span>.new
+test = <span class="constant">Test</span>.hi
+<span class="comment"># =&gt; hello</span>
+
+test.howdy
+<span class="comment"># =&gt; NoMethodError: private method `hello' called for #&lt;Test:0x007fc244cb5530&gt;</span>
+<span class="comment"># =&gt;     ...</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>The call in <code>Test#howdy</code> is conceptually the same as that in <code>Test#hi</code>, but Ruby does not allow even <code>self</code> as receiver, if stated explicitly!</p>
+
+<p>One more aspect to note is the third privacy level in Ruby, <code>protected</code>. This level is like “private,” in that it is used to specify methods that are part of the <em>implementation</em>, not the <em>interface</em>, but different in that these methods can be accessed through an explicit receiver, by members of the same class or any subclasses</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+<a href="#n16" name="n16">16</a>
+<a href="#n17" name="n17">17</a>
+<a href="#n18" name="n18">18</a>
+<a href="#n19" name="n19">19</a>
+<strong><a href="#n20" name="n20">20</a></strong>
+<a href="#n21" name="n21">21</a>
+<a href="#n22" name="n22">22</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">class</span> <span class="class">Test</span>
+  <span class="keyword">def</span> <span class="function">initialize</span>(name)
+    <span class="instance-variable">@name</span> = name
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">hi</span>(test)
+    puts <span class="string"><span class="delimiter">&quot;</span><span class="content">hi, test instance</span><span class="delimiter">&quot;</span></span>
+    test.hello
+  <span class="keyword">end</span>
+
+  protected
+    <span class="keyword">def</span> <span class="function">hello</span>
+      puts <span class="string"><span class="delimiter">&quot;</span><span class="content">hello, i'm '</span><span class="inline"><span class="inline-delimiter">#{</span><span class="instance-variable">@name</span><span class="inline-delimiter">}</span></span><span class="content">'</span><span class="delimiter">&quot;</span></span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+test1 = <span class="constant">Test</span>.new(<span class="string"><span class="delimiter">&quot;</span><span class="content">1</span><span class="delimiter">&quot;</span></span>)
+test2 = <span class="constant">Test</span>.new(<span class="string"><span class="delimiter">&quot;</span><span class="content">2</span><span class="delimiter">&quot;</span></span>)
+
+test1.hi(test2)
+<span class="comment"># =&gt; hi, test instance</span>
+<span class="comment"># =&gt; hello, i'm '2'</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>This is less used that public and private methods, but useful when some bit of data might be changed by other instances.</p>
+
+<p>Finally, these are <em>guidelines</em>, promises as it were. It is easy, however, to circumvent the privacy by using some of the metaprogramming facilities in Ruby. See, for instance, http://gnuu.org/2011/01/01/rubys-private-keyword-is-not-heresy/, for a discussion of the problem theoretically. See</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -633,6 +850,10 @@ To These, I would like to add one idea that is not really mentioned in _Design P
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/blog/2013/12/01/interfaces/">Interfaces</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/blog/2013/12/01/inheritance/">Inheritance vs. Mixins</a>
       </li>
     
@@ -646,10 +867,6 @@ To These, I would like to add one idea that is not really mentioned in _Design P
     
       <li class="post">
         <a href="/blog/blog/2013/11/30/block/">Blocks, Procs, Lambdas, Methods</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/blog/2013/11/30/string-concatenation/">String Concatenation</a>
       </li>
     
   </ul>
