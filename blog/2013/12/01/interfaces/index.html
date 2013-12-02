@@ -96,6 +96,8 @@
 <p>A Ruby class should provide a set of <code>public</code> methods which are the behaviours that it can be held accountable for. Other methods that are used by the objects of the class, or its descendents, can be made
 <code>private</code> or <code>protected</code> in order to make them less accessible, and to signal that they are not supported, that there is no reasonable expectation of their being maintained throughout the development process.</p>
 
+<!-- more -->
+
 <p>Ruby’s privacy markers are actually methods in the <a href="http://ruby-doc.org/core-1.9.3/Module.html"><code>Module</code></a> class (which is the superclass of <a href="http://ruby-doc.org/core-1.9.3/Class.html"><code>Class</code></a>, and so within the class hierarchy of every class we, as programmers, define in our code). Without any arguments they set the privacy level until the next time one is called. With arguments they set the privacy level for the arguments, which are <a href="http://ruby-doc.org/core-1.9.3/Symbol.html"><code>Symbol</code></a> objects referring to methods names. These can be any method named, no matter what their privacy status. So in a subclass we can change it:</p>
 
 <div><table class="CodeRay"><tr>
