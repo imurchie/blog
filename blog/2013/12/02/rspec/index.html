@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Iterators and Parameter-passing - Random Thoughts</title>
+  <title>RSpec, `expect` and `should` - Random Thoughts</title>
   <meta name="author" content="Isaac Murchie">
 
   
-  <meta name="description" content="While pairing with people it has been a surprise that it is not generally known that Ruby will decompose subarrays when passing parameters in &hellip;">
+  <meta name="description" content="RSpec used to (and still does, though it is not the preferred approach) use fancy metaprogramming techniques in order to check expectations within &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://imurchie.github.io/blog/blog/2013/12/01/iterators">
+  <link rel="canonical" href="http://imurchie.github.io/blog/blog/2013/12/02/rspec">
   <link href="/blog/favicon.png" rel="icon">
   <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/blog/atom.xml" rel="alternate" title="Random Thoughts" type="application/atom+xml">
@@ -68,7 +68,7 @@
   
   <header>
     
-      <h1 class="entry-title">Iterators and Parameter-passing</h1>
+      <h1 class="entry-title">RSpec, `expect` and `should`</h1>
     
     
       <p class="meta">
@@ -84,14 +84,14 @@
   
 
 
-<time datetime="2013-12-01T13:06:59-08:00" pubdate data-updated="true">Dec 1<span>st</span>, 2013</time>
+<time datetime="2013-12-02T09:09:58-08:00" pubdate data-updated="true">Dec 2<span>nd</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>While pairing with people it has been a surprise that it is not generally known that Ruby will decompose subarrays when passing parameters in iterators. That is, for instance, when modelling the movement of a rook in chess, we could have the code:</p>
+<div class="entry-content"><p>RSpec used to (and still does, though it is not the preferred approach) use fancy metaprogramming techniques in order to check expectations within tests, through the <a href="https://github.com/rspec/rspec-expectations/blob/master/Should.md"><code>#should</code></a> method:</p>
 
 <div><table class="CodeRay"><tr>
   <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
@@ -103,15 +103,27 @@
 <a href="#n7" name="n7">7</a>
 <a href="#n8" name="n8">8</a>
 <a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
 </pre></td>
-  <td class="code"><pre><span class="comment"># offsets from the initial position, (x, y)</span>
-offsets = [[<span class="integer">0</span>, <span class="integer">1</span>], [<span class="integer">1</span>, <span class="integer">1</span>], [<span class="integer">0</span>, <span class="integer">-1</span>], [<span class="integer">-1</span>, <span class="integer">-1</span>]]
-offsets.each <span class="keyword">do</span> |offset|
-  offset_x = offset[<span class="integer">0</span>]
-  offset_y = offset[<span class="integer">1</span>]
-  new_x, new_y = x + offset_x, y + offset_y
+  <td class="code"><pre><span class="keyword">class</span> <span class="class">Test</span>
+  <span class="keyword">def</span> <span class="function">hi</span>
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">hello!</span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
 
-  <span class="comment"># ...</span>
+describe <span class="constant">Test</span> <span class="keyword">do</span>
+  subject(<span class="symbol">:test</span>) { <span class="constant">Test</span>.new }
+
+  describe <span class="string"><span class="delimiter">&quot;</span><span class="content">#hi</span><span class="delimiter">&quot;</span></span> <span class="keyword">do</span>
+    it <span class="string"><span class="delimiter">&quot;</span><span class="content">should return 'hello!'</span><span class="delimiter">&quot;</span></span> <span class="keyword">do</span>
+      test.hi.should == <span class="string"><span class="delimiter">&quot;</span><span class="content">hello!</span><span class="delimiter">&quot;</span></span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
 <span class="keyword">end</span>
 </pre></td>
 </tr></table>
@@ -119,29 +131,9 @@ offsets.each <span class="keyword">do</span> |offset|
 
 <!-- more -->
 
-<p>But we could also not deal with the subarrays:</p>
+<p>In the current version (starting with 2.11), however, <code>#expect</code> “now the recommended way to define expectations on an object” (https://github.com/rspec/rspec-expectations/blob/master/Should.md). <a href="http://myronmars.to/n/dev-blog">Myron Marston</a>, one of the maintainers of <a href="https://github.com/rspec">RSpec</a>, has an <a href="http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax">interesting discussion of reasons for the change</a>, primary among them problems with testing proxy objects. Since proxy objects tend to derive from the “blank slate,” <a href="http://ruby-doc.org/core-1.9.3/BasicObject.html"><code>BasicObject</code></a>, instead of <a href="http://ruby-doc.org/core-1.9.3/Object.html"><code>Object</code></a>, the <a href="http://ruby-doc.org/core-1.9.3/Kernel.html"><code>Kernel</code></a> module is not mixed into the objects. But it is into <code>Kernel</code> that RSpec defines <code>#should</code>!</p>
 
-<div><table class="CodeRay"><tr>
-  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
-<a href="#n2" name="n2">2</a>
-<a href="#n3" name="n3">3</a>
-<a href="#n4" name="n4">4</a>
-<a href="#n5" name="n5">5</a>
-<a href="#n6" name="n6">6</a>
-</pre></td>
-  <td class="code"><pre>offsets = [[<span class="integer">0</span>, <span class="integer">1</span>], [<span class="integer">1</span>, <span class="integer">1</span>], [<span class="integer">0</span>, <span class="integer">-1</span>], [<span class="integer">-1</span>, <span class="integer">-1</span>]]
-offsets.each <span class="keyword">do</span> |offset_x, offset_y|
-  new_x, new_y = x + offset_x, y + offset_y
-
-  <span class="comment"># ...</span>
-<span class="keyword">end</span>
-</pre></td>
-</tr></table>
-</div>
-
-<p>This is trivial here, but allows for more expressive code. In the latter, it is clear that each element of <code>offset</code> is not just an element, but is a container, and in that the first element is the horizontal offset, and the second is the vertical offset.</p>
-
-<p>Further, we can have other nesting scenarios. One that comes to mind as neither unreasonable nor uncommon would be a <code>Hash</code> containing location data:</p>
+<p>The “Blank Slate” pattern is described in Paolo Perrotta’s <a href="http://pragprog.com/book/ppmetr/metaprogramming-ruby"><em>Metaprogramming in Ruby</em></a> (p. TODO?)</p>
 
 <div><table class="CodeRay"><tr>
   <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
@@ -155,21 +147,22 @@ offsets.each <span class="keyword">do</span> |offset_x, offset_y|
 <a href="#n9" name="n9">9</a>
 <strong><a href="#n10" name="n10">10</a></strong>
 </pre></td>
-  <td class="code"><pre>locations = { <span class="symbol">:a</span> =&gt; [<span class="integer">2</span>, <span class="integer">5</span>], <span class="symbol">:b</span> =&gt; [<span class="integer">6</span>, <span class="integer">8</span>] }
-<span class="comment"># or = { a: [2, 5], b: [6, 8] }</span>
+  <td class="code"><pre><span class="keyword">class</span> <span class="class">ProxyTest</span> &lt; <span class="constant">BasicObject</span>
+  <span class="keyword">def</span> <span class="function">initialize</span>(obj)
+    <span class="instance-variable">@obj</span> = obj
+  <span class="keyword">end</span>
 
-<span class="comment"># get all that are beyond (4, 4)</span>
-far_locations = locations.select <span class="keyword">do</span> |name, (x, y)|
-  x &gt; <span class="integer">4</span> &amp;&amp; y &gt; <span class="integer">4</span>
+  <span class="keyword">def</span> <span class="function">method_missing</span>(name, *args, &amp;block)
+    <span class="comment"># handle dynamic routing of methods</span>
+    <span class="instance-variable">@obj</span>.call(name, *args, &amp;block)
+  <span class="keyword">end</span>
 <span class="keyword">end</span>
-
-p far_locations
-<span class="comment"># =&gt; {:b=&gt;[6, 8]}</span>
 </pre></td>
 </tr></table>
 </div>
 
-<p>Excellent! Expressive!</p>
+<p>When this runs in RSpec, then, the <code>#should</code> call gets caught by <code>ProxyTest#method_missing</code>, which passes it along to its delegate. But most likely the delegate object does not implement a <code>#should</code> method (and even if it does, it is even less likely to implement the RSpec <code>#should</code> method!), and so its <code>#method_missing</code> is called and we end up with a <code>NoMethodError</code>.</p>
+
 </div>
 
 
@@ -192,7 +185,7 @@ p far_locations
   
 
 
-<time datetime="2013-12-01T13:06:59-08:00" pubdate data-updated="true">Dec 1<span>st</span>, 2013</time>
+<time datetime="2013-12-02T09:09:58-08:00" pubdate data-updated="true">Dec 2<span>nd</span>, 2013</time>
       
 
 
@@ -200,7 +193,7 @@ p far_locations
     
       <div class="sharing">
   
-  <a href="/blog//twitter.com/share" class="twitter-share-button" data-url="http://imurchie.github.io/blog/blog/2013/12/01/iterators/" data-via="" data-counturl="http://imurchie.github.io/blog/blog/2013/12/01/iterators/" >Tweet</a>
+  <a href="/blog//twitter.com/share" class="twitter-share-button" data-url="http://imurchie.github.io/blog/blog/2013/12/02/rspec/" data-via="" data-counturl="http://imurchie.github.io/blog/blog/2013/12/02/rspec/" >Tweet</a>
   
   
   
@@ -209,10 +202,8 @@ p far_locations
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/blog/2013/11/30/idioms/" title="Previous Post: Idioms and Habits">&laquo; Idioms and Habits</a>
+        <a class="basic-alignment left" href="/blog/blog/2013/12/01/interfaces/" title="Previous Post: Interfaces">&laquo; Interfaces</a>
       
-      
-        <a class="basic-alignment right" href="/blog/blog/2013/12/01/inheritance/" title="Next Post: Inheritance vs. Mixins">Inheritance vs. Mixins &raquo;</a>
       
     </p>
   </footer>

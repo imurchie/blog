@@ -4,7 +4,7 @@
   <title><![CDATA[Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-12-01T16:26:54-08:00</updated>
+  <updated>2013-12-02T09:11:47-08:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -12,6 +12,86 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[RSpec, `expect` and `should`]]></title>
+    <link href="http://imurchie.github.io/blog/blog/2013/12/02/rspec/"/>
+    <updated>2013-12-02T09:09:58-08:00</updated>
+    <id>http://imurchie.github.io/blog/blog/2013/12/02/rspec</id>
+    <content type="html"><![CDATA[<p>RSpec used to (and still does, though it is not the preferred approach) use fancy metaprogramming techniques in order to check expectations within tests, through the <a href="https://github.com/rspec/rspec-expectations/blob/master/Should.md"><code>#should</code></a> method:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">class</span> <span class="class">Test</span>
+  <span class="keyword">def</span> <span class="function">hi</span>
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">hello!</span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+describe <span class="constant">Test</span> <span class="keyword">do</span>
+  subject(<span class="symbol">:test</span>) { <span class="constant">Test</span>.new }
+
+  describe <span class="string"><span class="delimiter">&quot;</span><span class="content">#hi</span><span class="delimiter">&quot;</span></span> <span class="keyword">do</span>
+    it <span class="string"><span class="delimiter">&quot;</span><span class="content">should return 'hello!'</span><span class="delimiter">&quot;</span></span> <span class="keyword">do</span>
+      test.hi.should == <span class="string"><span class="delimiter">&quot;</span><span class="content">hello!</span><span class="delimiter">&quot;</span></span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
+
+<!-- more -->
+
+<p>In the current version (starting with 2.11), however, <code>#expect</code> “now the recommended way to define expectations on an object” (https://github.com/rspec/rspec-expectations/blob/master/Should.md). <a href="http://myronmars.to/n/dev-blog">Myron Marston</a>, one of the maintainers of <a href="https://github.com/rspec">RSpec</a>, has an <a href="http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax">interesting discussion of reasons for the change</a>, primary among them problems with testing proxy objects. Since proxy objects tend to derive from the “blank slate,” <a href="http://ruby-doc.org/core-1.9.3/BasicObject.html"><code>BasicObject</code></a>, instead of <a href="http://ruby-doc.org/core-1.9.3/Object.html"><code>Object</code></a>, the <a href="http://ruby-doc.org/core-1.9.3/Kernel.html"><code>Kernel</code></a> module is not mixed into the objects. But it is into <code>Kernel</code> that RSpec defines <code>#should</code>!</p>
+
+<p>The “Blank Slate” pattern is described in Paolo Perrotta’s <a href="http://pragprog.com/book/ppmetr/metaprogramming-ruby"><em>Metaprogramming in Ruby</em></a> (p. TODO?)</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+</pre></td>
+  <td class="code"><pre><span class="keyword">class</span> <span class="class">ProxyTest</span> &lt; <span class="constant">BasicObject</span>
+  <span class="keyword">def</span> <span class="function">initialize</span>(obj)
+    <span class="instance-variable">@obj</span> = obj
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">method_missing</span>(name, *args, &amp;block)
+    <span class="comment"># handle dynamic routing of methods</span>
+    <span class="instance-variable">@obj</span>.call(name, *args, &amp;block)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>When this runs in RSpec, then, the <code>#should</code> call gets caught by <code>ProxyTest#method_missing</code>, which passes it along to its delegate. But most likely the delegate object does not implement a <code>#should</code> method (and even if it does, it is even less likely to implement the RSpec <code>#should</code> method!), and so its <code>#method_missing</code> is called and we end up with a <code>NoMethodError</code>.</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Interfaces]]></title>

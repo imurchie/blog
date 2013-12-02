@@ -9,7 +9,7 @@
   <meta name="author" content="Isaac Murchie">
 
   
-  <meta name="description" content="No, not a Java interface, but concpetually very similar. Java’s interface is basically the specification of the public face of a class. Ruby doesn’t &hellip;">
+  <meta name="description" content="RSpec used to (and still does, though it is not the preferred approach) use fancy metaprogramming techniques in order to check expectations within &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,83 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/blog/2013/12/02/rspec/">RSpec, `expect` and `should`</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-02T09:09:58-08:00" pubdate data-updated="true">Dec 2<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>RSpec used to (and still does, though it is not the preferred approach) use fancy metaprogramming techniques in order to check expectations within tests, through the <a href="https://github.com/rspec/rspec-expectations/blob/master/Should.md"><code>#should</code></a> method:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">class</span> <span class="class">Test</span>
+  <span class="keyword">def</span> <span class="function">hi</span>
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">hello!</span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+describe <span class="constant">Test</span> <span class="keyword">do</span>
+  subject(<span class="symbol">:test</span>) { <span class="constant">Test</span>.new }
+
+  describe <span class="string"><span class="delimiter">&quot;</span><span class="content">#hi</span><span class="delimiter">&quot;</span></span> <span class="keyword">do</span>
+    it <span class="string"><span class="delimiter">&quot;</span><span class="content">should return 'hello!'</span><span class="delimiter">&quot;</span></span> <span class="keyword">do</span>
+      test.hi.should == <span class="string"><span class="delimiter">&quot;</span><span class="content">hello!</span><span class="delimiter">&quot;</span></span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/blog/2013/12/02/rspec/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -614,57 +691,9 @@ To These, I would like to add one idea that is not really mentioned in _Design P
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2013/11/28/ruby-symbols/">Ruby Symbols</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-28T21:34:40-08:00" pubdate data-updated="true">Nov 28<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Ruby <code lang="ruby">Symbol</code>s are interesting things, conceptually straddling the line separating themselves from <code lang="ruby">String</code>s. They do not, however, have any content of their own. They are, basically, the logical endpoint of the <em>nominitive</em> case in case-based grammars.</p>
-
-<p>As we know from the Sanskrit grammarians,</p>
-
-<blockquote>
-  prātipadikārthaliṅgaparimāṇavacanamātre prathamā
-  (Pā. 2.3.46)
-</blockquote>
-
-<p>Which is to say, the “first,” or nominative, case is used in the sense of merely (<em>mātre</em>) the lexical meaning of the nominal base (<em>prātipadikārtha</em>), its gender (<em>liṅga</em>), its measure (<em>parimāṇa</em>), or its number (<em>vacana</em>)</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/blog/2013/11/28/ruby-symbols/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
+    
+      <a class="prev" href="/blog/blog/page/2/">&larr; Older</a>
     
     <a href="/blog/blog/archives">Blog Archives</a>
     
@@ -675,6 +704,10 @@ To These, I would like to add one idea that is not really mentioned in _Design P
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/blog/2013/12/02/rspec/">RSpec, `expect` and `should`</a>
+      </li>
     
       <li class="post">
         <a href="/blog/blog/2013/12/01/interfaces/">Interfaces</a>
@@ -690,10 +723,6 @@ To These, I would like to add one idea that is not really mentioned in _Design P
     
       <li class="post">
         <a href="/blog/blog/2013/11/30/idioms/">Idioms and Habits</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/blog/2013/11/30/block/">Blocks, Procs, Lambdas, Methods</a>
       </li>
     
   </ul>
