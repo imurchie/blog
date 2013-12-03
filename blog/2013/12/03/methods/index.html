@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Random Thoughts</title>
+  <title>Method Lookup in Ruby - Random Thoughts</title>
   <meta name="author" content="Isaac Murchie">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://imurchie.github.io/blog">
+  <link rel="canonical" href="http://imurchie.github.io/blog/blog/2013/12/03/methods">
   <link href="/blog/favicon.png" rel="icon">
   <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/blog/atom.xml" rel="alternate" title="Random Thoughts" type="application/atom+xml">
@@ -63,15 +63,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/blog/2013/12/03/methods/">Method Lookup in Ruby</a></h1>
+      <h1 class="entry-title">Method Lookup in Ruby</h1>
     
     
       <p class="meta">
@@ -94,7 +91,7 @@
   </header>
 
 
-  <div class="entry-content"><p>When a message is sent to an object it needs to be interpretted. If sent without an explicit receiver, Ruby first looks for a variable in scope with that name. Then it moves to the current object (what is currently pointed to by <code>self</code>) and looks for a method:</p>
+<div class="entry-content"><p>When a message is sent to an object it needs to be interpretted. If sent without an explicit receiver, Ruby first looks for a variable in scope with that name. Then it moves to the current object (what is currently pointed to by <code>self</code>) and looks for a method:</p>
 
 <div><table class="CodeRay"><tr>
   <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
@@ -492,62 +489,16 @@ puts b.test
   <li>Return to step 3 for the superclass of the current class.</li>
 </ol>
 </div>
-  
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2013/12/02/design/">In a Small Application&#8230;</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
   
 
+<span class="byline author vcard">Posted by <span class="fn">Isaac Murchie</span></span>
 
-<time datetime="2013-12-02T09:15:39-08:00" pubdate data-updated="true">Dec 2<span>nd</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><blockquote>
-  <p>“In a small application, poor design is survivable. Even if everything is connected to everything else, if you can hold it all in your head at once you can still improve the application. The problem with poorly designed small applications is that if they are successful they grow up to be poorly designed big applications. They gradually become tar pits in which you fear to tread lest you sink without a trace. Changes that should be simple may cascade around the application, breaking code everywhere and requiring extensive rewriting. Tests are caught in the crossfire and begin to feel like a hindrance rather than a help.”</p>
-</blockquote>
-
-<p>— Sandi Metz. <em>Pratical Object-Oriented Design in Ruby</em>.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2013/12/02/rspec/">RSpec, `expect` and `should`</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
@@ -559,522 +510,38 @@ puts b.test
   
 
 
-<time datetime="2013-12-02T09:09:58-08:00" pubdate data-updated="true">Dec 2<span>nd</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>RSpec used to (and still does, though it is not the preferred approach) use fancy metaprogramming techniques in order to check expectations within tests, through the <a href="https://github.com/rspec/rspec-expectations/blob/master/Should.md"><code>#should</code></a> method:</p>
-
-<div><table class="CodeRay"><tr>
-  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
-<a href="#n2" name="n2">2</a>
-<a href="#n3" name="n3">3</a>
-<a href="#n4" name="n4">4</a>
-<a href="#n5" name="n5">5</a>
-<a href="#n6" name="n6">6</a>
-<a href="#n7" name="n7">7</a>
-<a href="#n8" name="n8">8</a>
-<a href="#n9" name="n9">9</a>
-<strong><a href="#n10" name="n10">10</a></strong>
-<a href="#n11" name="n11">11</a>
-<a href="#n12" name="n12">12</a>
-<a href="#n13" name="n13">13</a>
-<a href="#n14" name="n14">14</a>
-<a href="#n15" name="n15">15</a>
-</pre></td>
-  <td class="code"><pre><span class="keyword">class</span> <span class="class">Test</span>
-  <span class="keyword">def</span> <span class="function">hi</span>
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">hello!</span><span class="delimiter">&quot;</span></span>
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-
-describe <span class="constant">Test</span> <span class="keyword">do</span>
-  subject(<span class="symbol">:test</span>) { <span class="constant">Test</span>.new }
-
-  describe <span class="string"><span class="delimiter">&quot;</span><span class="content">#hi</span><span class="delimiter">&quot;</span></span> <span class="keyword">do</span>
-    it <span class="string"><span class="delimiter">&quot;</span><span class="content">should return 'hello!'</span><span class="delimiter">&quot;</span></span> <span class="keyword">do</span>
-      test.hi.should == <span class="string"><span class="delimiter">&quot;</span><span class="content">hello!</span><span class="delimiter">&quot;</span></span>
-    <span class="keyword">end</span>
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-</pre></td>
-</tr></table>
-</div>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/blog/2013/12/02/rspec/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
+<time datetime="2013-12-03T09:03:18-08:00" pubdate data-updated="true">Dec 3<span>rd</span>, 2013</time>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2013/12/01/interfaces/">Interfaces</a></h1>
-    
-    
-      <p class="meta">
-        
 
-
-
-
-
-
-
-
+<span class="categories">
   
+    <a class='category' href='/blog/blog/categories/internals/'>internals</a>, <a class='category' href='/blog/blog/categories/ruby/'>ruby</a>
+  
+</span>
 
 
-<time datetime="2013-12-01T16:20:13-08:00" pubdate data-updated="true">Dec 1<span>st</span>, 2013</time>
-        
-      </p>
+    </p>
     
-  </header>
-
-
-  <div class="entry-content"><p>No, not a <a href="http://www.java.com/en/">Java</a> <a href="http://docs.oracle.com/javase/tutorial/java/concepts/interface.html"><code>interface</code></a>, but concpetually very similar. Java’s <code>interface</code> is basically the specification of the public face of a class. Ruby doesn’t have such a functionality explicitly built into it, though the design principle of writing to an “interface” still holds.</p>
-
-<p>A Ruby class should provide a set of <code>public</code> methods which are the behaviours that it can be held accountable for. Other methods that are used by the objects of the class, or its descendents, can be made
-<code>private</code> or <code>protected</code> in order to make them less accessible, and to signal that they are not supported, that there is no reasonable expectation of their being maintained throughout the development process.</p>
-
+      <div class="sharing">
+  
+  <a href="/blog//twitter.com/share" class="twitter-share-button" data-url="http://imurchie.github.io/blog/blog/2013/12/03/methods/" data-via="" data-counturl="http://imurchie.github.io/blog/blog/2013/12/03/methods/" >Tweet</a>
+  
+  
+  
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/blog/2013/12/01/interfaces/">Read on &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  
-    <article>
+    
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2013/12/01/inheritance/">Inheritance vs. Mixins</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-01T13:08:46-08:00" pubdate data-updated="true">Dec 1<span>st</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In thinking through how we might change chess game to use a mixin model instead of an inheritance. Our main object model at the moment looks like:</p>
-
-<pre>
-- Chess::
-    - Game
-    - Board
-        - Piece (abstract)
-            - Pawn
-            - SteppingPiece (abstract)
-                - King
-                - Knight
-            - SlidingPiece (abstract)
-                - Queen
-                - Rook
-                - Bishop
-</pre>
-
-<p>It was difficult to think of logical units that the mixin modules would embody. In this class hierarchy all the parent classes make sense to me.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/blog/2013/12/01/inheritance/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
+        <a class="basic-alignment left" href="/blog/blog/2013/12/02/design/" title="Previous Post: In a small application... ">&laquo; In a small application... </a>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2013/12/01/iterators/">Iterators and Parameter-passing</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-01T13:06:59-08:00" pubdate data-updated="true">Dec 1<span>st</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>While pairing with people it has been a surprise that it is not generally known that Ruby will decompose subarrays when passing parameters in iterators. That is, for instance, when modelling the movement of a rook in chess, we could have the code:</p>
-
-<div><table class="CodeRay"><tr>
-  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
-<a href="#n2" name="n2">2</a>
-<a href="#n3" name="n3">3</a>
-<a href="#n4" name="n4">4</a>
-<a href="#n5" name="n5">5</a>
-<a href="#n6" name="n6">6</a>
-<a href="#n7" name="n7">7</a>
-<a href="#n8" name="n8">8</a>
-<a href="#n9" name="n9">9</a>
-</pre></td>
-  <td class="code"><pre><span class="comment"># offsets from the initial position, (x, y)</span>
-offsets = [[<span class="integer">0</span>, <span class="integer">1</span>], [<span class="integer">1</span>, <span class="integer">1</span>], [<span class="integer">0</span>, <span class="integer">-1</span>], [<span class="integer">-1</span>, <span class="integer">-1</span>]]
-offsets.each <span class="keyword">do</span> |offset|
-  offset_x = offset[<span class="integer">0</span>]
-  offset_y = offset[<span class="integer">1</span>]
-  new_x, new_y = x + offset_x, y + offset_y
-
-  <span class="comment"># ...</span>
-<span class="keyword">end</span>
-</pre></td>
-</tr></table>
-</div>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/blog/2013/12/01/iterators/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2013/11/30/idioms/">Idioms and Habits</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-30T11:35:00-08:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I am slowly to have in mind Ruby idioms for things that I would initially turn to manual techniques. The first that comes to mind is iterating over an array and a sub-array one shorter. How I would have done it:</p>
-
-<div><table class="CodeRay"><tr>
-  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
-<a href="#n2" name="n2">2</a>
-<a href="#n3" name="n3">3</a>
-<a href="#n4" name="n4">4</a>
-<a href="#n5" name="n5">5</a>
-<a href="#n6" name="n6">6</a>
-<a href="#n7" name="n7">7</a>
-<a href="#n8" name="n8">8</a>
-<a href="#n9" name="n9">9</a>
-<strong><a href="#n10" name="n10">10</a></strong>
-<a href="#n11" name="n11">11</a>
-<a href="#n12" name="n12">12</a>
-<a href="#n13" name="n13">13</a>
-</pre></td>
-  <td class="code"><pre>array = [<span class="integer">1</span>, <span class="integer">2</span>, <span class="integer">3</span>, <span class="integer">4</span>, <span class="integer">5</span>, <span class="integer">6</span>]
-
-i = <span class="integer">0</span>
-array.each <span class="keyword">do</span> |el|
-  j = i + <span class="integer">1</span>
-  <span class="keyword">while</span> j &lt; array.length
-    <span class="comment"># process el (or array[i]) and array[j]</span>
-
-    j += <span class="integer">1</span>
-  <span class="keyword">end</span>
-
-  i += <span class="integer">1</span>
-<span class="keyword">end</span>
-</pre></td>
-</tr></table>
-</div>
-
-<p>Which basically Ruby-ifies a C-style for-loop implementation</p>
-
-<div><table class="CodeRay"><tr>
-  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
-<a href="#n2" name="n2">2</a>
-<a href="#n3" name="n3">3</a>
-<a href="#n4" name="n4">4</a>
-<a href="#n5" name="n5">5</a>
-</pre></td>
-  <td class="code"><pre>for(int i=0; i&lt;array.length; i++)
-  for(int j=i+1; j&lt;array.length; j++)
-    # process array[i] and array[j]
-  end
-end
-</pre></td>
-</tr></table>
-</div>
-
-<p>However, Ruby can do this in a much better way, using <code lang="ruby">Array</code> and <code lang="ruby">Fixnum</code> methods:</p>
-
-<div><table class="CodeRay"><tr>
-  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
-<a href="#n2" name="n2">2</a>
-<a href="#n3" name="n3">3</a>
-<a href="#n4" name="n4">4</a>
-<a href="#n5" name="n5">5</a>
-<a href="#n6" name="n6">6</a>
-<a href="#n7" name="n7">7</a>
-<a href="#n8" name="n8">8</a>
-<a href="#n9" name="n9">9</a>
-<strong><a href="#n10" name="n10">10</a></strong>
-<a href="#n11" name="n11">11</a>
-<a href="#n12" name="n12">12</a>
-<a href="#n13" name="n13">13</a>
-<a href="#n14" name="n14">14</a>
-</pre></td>
-  <td class="code"><pre><span class="comment"># using array indices so both sides are alike</span>
-<span class="comment"># and the C implementation is better mirrored</span>
-array.times <span class="keyword">do</span> |i|
-  (i+<span class="integer">1</span>...array.length).times <span class="keyword">do</span> |j|
-    <span class="comment"># process array[i] and array[j]</span>
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-
-<span class="comment"># or with an Arrray method</span>
-array.each_with_index <span class="keyword">do</span> |el, i|
-  (i+<span class="integer">1</span>...array.length).times <span class="keyword">do</span> |j|
-    <span class="comment"># process el and array[j]</span>
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-</pre></td>
-</tr></table>
-</div>
-
-<p>The benefit of the last two Ruby implementations is that the programmer no longer needs to keep track of the indices. We are, as developers, left with making the logic of the data processing rather than the machinery of iterating over it.</p>
-
-<p>While I knew the methods, until recently they hadn’t been in the fore of my mind when I arrive at a problem needing solving. I’m sure there are many more that will eventually percolate up so that they are the go-to implementations.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2013/11/30/block/">Blocks, Procs, Lambdas, Methods</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-30T08:14:45-08:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Ruby has a number of ways to create callable bits of code: blocks, procs, lambdas, and methods.</p>
+    </p>
+  </footer>
+</article>
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/blog/2013/11/30/block/">Read on &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2013/11/30/string-concatenation/">String Concatenation</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-30T08:08:28-08:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>The literature says that <code>String#&lt;&lt;</code> is preferable to <code>String#+</code>. Why? One metric is speed. The following Ruby code snippet:</p>
-
-<div><table class="CodeRay"><tr>
-  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
-<a href="#n2" name="n2">2</a>
-<a href="#n3" name="n3">3</a>
-<a href="#n4" name="n4">4</a>
-<a href="#n5" name="n5">5</a>
-<a href="#n6" name="n6">6</a>
-<a href="#n7" name="n7">7</a>
-<a href="#n8" name="n8">8</a>
-<a href="#n9" name="n9">9</a>
-<strong><a href="#n10" name="n10">10</a></strong>
-</pre></td>
-  <td class="code"><pre><span class="constant">Benchmark</span>.bm <span class="keyword">do</span> |b|
-  b.report(<span class="string"><span class="delimiter">&quot;</span><span class="content">+:  </span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span>
-    string = <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
-    <span class="integer">100_000</span>.times { string += <span class="string"><span class="delimiter">&quot;</span><span class="content">another</span><span class="delimiter">&quot;</span></span> }
-  <span class="keyword">end</span>
-  b.report(<span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;&lt;: </span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span>
-    string = <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
-    <span class="integer">100_000</span>.times { string &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">another</span><span class="delimiter">&quot;</span></span> }
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-</pre></td>
-</tr></table>
-</div>
-
-<p>Yields the following data:</p>
-
-<div><table class="CodeRay"><tr>
-  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
-<a href="#n2" name="n2">2</a>
-<a href="#n3" name="n3">3</a>
-</pre></td>
-  <td class="code"><pre>      user       system    total       real
-+:    8.960000   2.750000  11.710000 ( 11.735344)
-&lt;&lt;:   0.020000   0.000000   0.020000 (  0.019966)
-</pre></td>
-</tr></table>
-</div>
-
-<p>So it appears that concatenation with the <code>&lt;&lt;</code> method is much faster. (As a side note, <code>String#concat</code> and <code>String#&lt;&lt;</code> are aliases.)</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2013/11/30/debugging/">Debugging</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-30T08:01:53-08:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><blockquote>
-  <p>“Everyone knows that debugging is twice as hard as writing a program in the first place. So if you’re as clever as you can be when you write it, how will you ever debug it?”</p>
-</blockquote>
-
-<p>— Brian Kernighan (Elements of Programming Style, Chapter 2).</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/blog/page/2/">&larr; Older</a>
-    
-    <a href="/blog/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -1086,7 +553,7 @@ array.each_with_index <span class="keyword">do</span> |el, i|
       </li>
     
       <li class="post">
-        <a href="/blog/blog/2013/12/02/design/">In a Small Application&#8230;</a>
+        <a href="/blog/blog/2013/12/02/design/">In a Small Application...</a>
       </li>
     
       <li class="post">
@@ -1110,6 +577,7 @@ array.each_with_index <span class="keyword">do</span> |el, i|
 
   
 </aside>
+
 
     </div>
   </div>

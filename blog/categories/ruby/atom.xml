@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ruby | Random Thoughts]]></title>
+  <link href="http://imurchie.github.io/blog/blog/categories/ruby/atom.xml" rel="self"/>
+  <link href="http://imurchie.github.io/blog/"/>
+  <updated>2013-12-03T09:06:14-08:00</updated>
+  <id>http://imurchie.github.io/blog/</id>
+  <author>
+    <name><![CDATA[Isaac Murchie]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Method Lookup in Ruby]]></title>
+    <link href="http://imurchie.github.io/blog/blog/2013/12/03/methods/"/>
+    <updated>2013-12-03T09:03:18-08:00</updated>
+    <id>http://imurchie.github.io/blog/blog/2013/12/03/methods</id>
+    <content type="html"><![CDATA[<p>When a message is sent to an object it needs to be interpretted. If sent without an explicit receiver, Ruby first looks for a variable in scope with that name. Then it moves to the current object (what is currently pointed to by <code>self</code>) and looks for a method:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+<a href="#n16" name="n16">16</a>
+<a href="#n17" name="n17">17</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">class</span> <span class="class">Test</span>
+  <span class="keyword">def</span> <span class="function">test</span>
+    name = <span class="integer">1</span>
+
+    name
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">test</span>
+    name
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">name</span>
+    <span class="integer">2</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+test_obj = <span class="constant">Test</span>.new
+</pre></td>
+</tr></table>
+</div>
+
+<p>Calling <code>Test#test</code> will return 1, since there is a variable in the local scope with the name <code>name</code>.</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+</pre></td>
+  <td class="code"><pre>puts test_obj.test
+<span class="comment"># =&gt; 1</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>But calling <code>Test#test2</code> will return 2, as there is nothing in scope with that name, so the method <code>Test#name</code> is looked for, and found:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+</pre></td>
+  <td class="code"><pre>puts test_obj.test2
+<span class="comment"># =&gt; 2</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>But how is the lookup done? Where does Ruby try to find the method, and what happens when it cannot find one? The basic answer is that it looks in the class of the object receiving the message (<code>Test</code>, in the case of <code>test_obj</code>, above). If it is not found there it goes up the ancestor chain. In the case of <code>Test</code>, this means the default superclass, <a href="http://ruby-doc.org/core-1.9.3/Object.html"><code>Object</code></a>, and its superclass, <a href="http://ruby-doc.org/core-1.9.3/BasicObject.html"><code>BasicObject</code></a>.</p>
+
+<p>If the method is not found in the class or any of its ancestors, Ruby begins to look for <code>#method_missing</code>. This lookup follows the same procedure as the original method lookup, except that the method is defined on <a href="http://ruby-doc.org/core-1.9.3/BasicObject.html#method-i-method_missing"><code>BasicObject</code></a> so it will always eventually, at the very end of the ancestor chain. This final method just raises a <a href="http://ruby-doc.org/core-1.9.3/NoMethodError.html"><code>NoMethodError</code></a> (source from <a href="https://github.com/ruby/ruby/blob/ruby_1_9_3/vm_eval.c">vm_eval.c</a>):</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+</pre></td>
+  <td class="code"><pre>static <span class="constant">VALUE</span>
+rb_method_missing(int argc, const <span class="constant">VALUE</span> *argv, <span class="constant">VALUE</span> obj) {
+  rb_thread_t *th = GET_THREAD();
+  raise_method_missing(th, argc, argv, obj, th-&gt;method_missing_reason);
+  <span class="keyword">return</span> <span class="constant">Qnil</span>;                <span class="regexp"><span class="delimiter">/</span><span class="content">* not reached *</span><span class="delimiter">/</span></span>
+}
+</pre></td>
+</tr></table>
+</div>
+
+<p>Now that we have the basics, what happens when things are more complex? What about module mixins? What about singleton methods?</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+</pre></td>
+  <td class="code"><pre><span class="keyword">class</span> <span class="class">A</span>
+  <span class="keyword">def</span> <span class="function">test</span>
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">Instance method of class A</span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+a = <span class="constant">A</span>.new
+puts a.test
+<span class="comment"># =&gt; &quot;Instance method of class A&quot;</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>This is as we expect given the understanding above. Now let’s add some modules to the mix:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+<a href="#n16" name="n16">16</a>
+<a href="#n17" name="n17">17</a>
+<a href="#n18" name="n18">18</a>
+<a href="#n19" name="n19">19</a>
+<strong><a href="#n20" name="n20">20</a></strong>
+<a href="#n21" name="n21">21</a>
+<a href="#n22" name="n22">22</a>
+<a href="#n23" name="n23">23</a>
+<a href="#n24" name="n24">24</a>
+<a href="#n25" name="n25">25</a>
+<a href="#n26" name="n26">26</a>
+<a href="#n27" name="n27">27</a>
+<a href="#n28" name="n28">28</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">module</span> <span class="class">M</span>
+  <span class="keyword">def</span> <span class="function">test</span>
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">Mixin method of module M</span><span class="char">\n</span><span class="inline"><span class="inline-delimiter">#{</span><span class="keyword">super</span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">module</span> <span class="class">N</span>
+  <span class="keyword">def</span> <span class="function">test</span>
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">Mixin method of module N</span><span class="char">\n</span><span class="inline"><span class="inline-delimiter">#{</span><span class="keyword">super</span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class">B</span> &lt; <span class="constant">A</span>
+  include <span class="constant">M</span>
+  include <span class="constant">N</span>
+
+  <span class="keyword">def</span> <span class="function">test</span>
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">Instance method of class B</span><span class="char">\n</span><span class="inline"><span class="inline-delimiter">#{</span><span class="keyword">super</span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+b = <span class="constant">B</span>.new
+puts b.test
+<span class="comment"># =&gt; Instance method of class B</span>
+<span class="comment"># =&gt; Mixin method of module N</span>
+<span class="comment"># =&gt; Mixin method of module M</span>
+<span class="comment"># =&gt; Instance method of class A</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>This shows us that modules mixed into a class are lower on the chain than instance methods, and that they are added to the chain in the order in which they are included in the class.</p>
+
+<p>The next thing to try is to mix modules directly into the object, through the <a href="http://ruby-doc.org/core-1.9.3/Object.html#method-i-extend"><code>Object#extend</code></a> method:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+<a href="#n16" name="n16">16</a>
+<a href="#n17" name="n17">17</a>
+<a href="#n18" name="n18">18</a>
+<a href="#n19" name="n19">19</a>
+<strong><a href="#n20" name="n20">20</a></strong>
+<a href="#n21" name="n21">21</a>
+<a href="#n22" name="n22">22</a>
+<a href="#n23" name="n23">23</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">module</span> <span class="class">O</span>
+  <span class="keyword">def</span> <span class="function">test</span>
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">Mixin method of module O</span><span class="char">\n</span><span class="inline"><span class="inline-delimiter">#{</span><span class="keyword">super</span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">module</span> <span class="class">P</span>
+  <span class="keyword">def</span> <span class="function">test</span>
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">Mixin method of module P</span><span class="char">\n</span><span class="inline"><span class="inline-delimiter">#{</span><span class="keyword">super</span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+b.extend(<span class="constant">O</span>)
+b.extend(<span class="constant">P</span>)
+
+
+puts b.test
+<span class="comment"># =&gt; Mixin method of module P</span>
+<span class="comment"># =&gt; Mixin method of module O</span>
+<span class="comment"># =&gt; Instance method of class B</span>
+<span class="comment"># =&gt; Mixin method of module N</span>
+<span class="comment"># =&gt; Mixin method of module M</span>
+<span class="comment"># =&gt; Instance method of class A</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>Modules mixed into objects, then, act like those on the class, but supercede the instance methods.</p>
+
+<p>What, then, about <em>methods</em> defined on the object itself?</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">class</span> &lt;&lt; <span class="class">b</span>
+  <span class="keyword">def</span> <span class="function">test</span>
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">Singleton method of object b</span><span class="char">\n</span><span class="inline"><span class="inline-delimiter">#{</span><span class="keyword">super</span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+puts b.test
+<span class="comment"># =&gt; Singleton method of object b</span>
+<span class="comment"># =&gt; Mixin method of module P</span>
+<span class="comment"># =&gt; Mixin method of module O</span>
+<span class="comment"># =&gt; Instance method of class B</span>
+<span class="comment"># =&gt; Mixin method of module N</span>
+<span class="comment"># =&gt; Mixin method of module M</span>
+<span class="comment"># =&gt; Instance method of class A</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>As we would expect, the singleton method sits at the head of the chain. But is this absolute, or just a consequence of defining it <em>after</em> having mixed in the modules?</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+<a href="#n16" name="n16">16</a>
+<a href="#n17" name="n17">17</a>
+<a href="#n18" name="n18">18</a>
+<a href="#n19" name="n19">19</a>
+<strong><a href="#n20" name="n20">20</a></strong>
+<a href="#n21" name="n21">21</a>
+<a href="#n22" name="n22">22</a>
+<a href="#n23" name="n23">23</a>
+<a href="#n24" name="n24">24</a>
+<a href="#n25" name="n25">25</a>
+<a href="#n26" name="n26">26</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">module</span> <span class="class">Q</span>
+  <span class="keyword">def</span> <span class="function">test</span>
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">Mixin method of module Q</span><span class="char">\n</span><span class="inline"><span class="inline-delimiter">#{</span><span class="keyword">super</span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">module</span> <span class="class">R</span>
+  <span class="keyword">def</span> <span class="function">test</span>
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">Mixin method of module R</span><span class="char">\n</span><span class="inline"><span class="inline-delimiter">#{</span><span class="keyword">super</span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+b.extend(<span class="constant">Q</span>)
+b.extend(<span class="constant">R</span>)
+
+
+puts b.test
+<span class="comment"># =&gt; Singleton method of object b</span>
+<span class="comment"># =&gt; Mixin method of module R</span>
+<span class="comment"># =&gt; Mixin method of module Q</span>
+<span class="comment"># =&gt; Mixin method of module P</span>
+<span class="comment"># =&gt; Mixin method of module O</span>
+<span class="comment"># =&gt; Instance method of class B</span>
+<span class="comment"># =&gt; Mixin method of module N</span>
+<span class="comment"># =&gt; Mixin method of module M</span>
+<span class="comment"># =&gt; Instance method of class A</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>Exciting! The singleton method stays at the top of the chain, the first place that is searched when attempting to find a method. As an aside, and just to drive home the… um… singularity… of singleton methods, if we define a singleton method on object <code>a</code> that method will <em>not</em> be called when using <code>b</code>:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+<a href="#n16" name="n16">16</a>
+<a href="#n17" name="n17">17</a>
+<a href="#n18" name="n18">18</a>
+<a href="#n19" name="n19">19</a>
+<strong><a href="#n20" name="n20">20</a></strong>
+<a href="#n21" name="n21">21</a>
+<a href="#n22" name="n22">22</a>
+</pre></td>
+  <td class="code"><pre>a.instance_eval <span class="keyword">do</span>
+  <span class="keyword">def</span> <span class="function">test</span>
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">Singleton method of object a</span><span class="char">\n</span><span class="inline"><span class="inline-delimiter">#{</span><span class="keyword">super</span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+puts a.test
+<span class="comment"># =&gt; Singleton method on a</span>
+<span class="comment"># =&gt; Instance method of class A</span>
+
+
+puts b.test
+<span class="comment"># =&gt; Singleton method of object b</span>
+<span class="comment"># =&gt; Mixin method of module R</span>
+<span class="comment"># =&gt; Mixin method of module Q</span>
+<span class="comment"># =&gt; Mixin method of module P</span>
+<span class="comment"># =&gt; Mixin method of module O</span>
+<span class="comment"># =&gt; Instance method of class B</span>
+<span class="comment"># =&gt; Mixin method of module N</span>
+<span class="comment"># =&gt; Mixin method of module M</span>
+<span class="comment"># =&gt; Instance method of class A</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>Hooray! Things work as expected. And the process can be summed up:</p>
+
+<ol>
+  <li>Singleton methods on the Eigenclass.</li>
+  <li>Methods from modules on the Eigenclass, in reverse order of inclusion.</li>
+  <li>Instance methods of the class.</li>
+  <li>Methods from modules on the class, in reverse order of inclusion.</li>
+  <li>Return to step 3 for the superclass of the current class.</li>
+</ol>
+]]></content>
+  </entry>
+  
+</feed>
