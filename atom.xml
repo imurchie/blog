@@ -4,7 +4,7 @@
   <title><![CDATA[Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-12-03T09:06:14-08:00</updated>
+  <updated>2013-12-03T09:07:35-08:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -19,6 +19,8 @@
     <updated>2013-12-03T09:03:18-08:00</updated>
     <id>http://imurchie.github.io/blog/blog/2013/12/03/methods</id>
     <content type="html"><![CDATA[<p>When a message is sent to an object it needs to be interpretted. If sent without an explicit receiver, Ruby first looks for a variable in scope with that name. Then it moves to the current object (what is currently pointed to by <code>self</code>) and looks for a method:</p>
+
+<!-- more -->
 
 <div><table class="CodeRay"><tr>
   <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
