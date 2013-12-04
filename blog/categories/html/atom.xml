@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Html | Random Thoughts]]></title>
+  <link href="http://imurchie.github.io/blog/blog/categories/html/atom.xml" rel="self"/>
+  <link href="http://imurchie.github.io/blog/"/>
+  <updated>2013-12-04T08:13:04-08:00</updated>
+  <id>http://imurchie.github.io/blog/</id>
+  <author>
+    <name><![CDATA[Isaac Murchie]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Embedded Ruby and HTML Production]]></title>
+    <link href="http://imurchie.github.io/blog/blog/2013/12/04/erb/"/>
+    <updated>2013-12-04T08:10:18-08:00</updated>
+    <id>http://imurchie.github.io/blog/blog/2013/12/04/erb</id>
+    <content type="html"><![CDATA[<p>The funny thing about creating basic html forms and tables is that it makes the internet seem like it is 1997. After we stopped using Lynx or the command-line Mozilla, but before stylesheets gained acceptance. All we need is some animated gifs and multicolored text to induce our Geocities nightmares.</p>
+
+<p>But seriously.</p>
+
+<p>After generating JSON from our controllers, it feels nice to get to views and the creation of HTML. We’re using Embedded Ruby (ERB) which got me thinking about the technology.</p>
+
+<p><a href="http://ruby-doc.org/stdlib-1.9.3/libdoc/erb/rdoc/ERB.html"><code>ERB</code></a> is part of the Ruby standard library, available to whatever programs might want to process templates:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+</pre></td>
+  <td class="code"><pre><span class="comment"># template.erb</span>
+Hello! <span class="constant">I</span> am just a regular file, with tags <span class="keyword">for</span> inserting things.
+
+This is <span class="key">one</span>: &lt;<span class="string"><span class="delimiter">%=</span><span class="content"> name %&gt;
+And another: &lt;%</span><span class="delimiter">=</span></span> statement <span class="string"><span class="delimiter">%&gt;</span><span class="content">
+</span></span></pre></td>
+</tr></table>
+</div>
+
+<p>The contents of the file are sent to the <code>ERB</code> class:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+</pre></td>
+  <td class="code"><pre><span class="comment"># processing_erb.rb</span>
+require <span class="string"><span class="delimiter">&quot;</span><span class="content">erb</span><span class="delimiter">&quot;</span></span>
+
+template = <span class="constant">File</span>.read(<span class="string"><span class="delimiter">&quot;</span><span class="content">template.erb</span><span class="delimiter">&quot;</span></span>)
+erb = <span class="constant">ERB</span>.new(template)
+</pre></td>
+</tr></table>
+</div>
+
+<p>There are other arguments we could send in (e.g., the “safe level” at which it should be run, etc.) but we will ignore them for now. At this point the initializer sends the source to the <code>ERB::Compiler</code> whose job it is to take the string and generate Ruby code for it:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+</pre></td>
+  <td class="code"><pre><span class="comment"># lib/erb.rb</span>
+<span class="keyword">def</span> <span class="function">initialize</span>(str, safe_level=<span class="predefined-constant">nil</span>, trim_mode=<span class="predefined-constant">nil</span>, eoutvar=<span class="string"><span class="delimiter">'</span><span class="content">_erbout</span><span class="delimiter">'</span></span>)
+  <span class="instance-variable">@safe_level</span> = safe_level
+  compiler = <span class="constant">ERB</span>::<span class="constant">Compiler</span>.new(trim_mode)
+  set_eoutvar(compiler, eoutvar)
+  <span class="instance-variable">@src</span>, <span class="instance-variable">@enc</span> = *compiler.compile(str)
+  <span class="instance-variable">@filename</span> = <span class="predefined-constant">nil</span>
+<span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>The compiler basically reads each token from the source template, and produces <code>print</code> statements for all the non-embedded parts which are pushed into a buffer. The opening embedding tags are pushed into a stack. When it gets to a closing embedding tag it pushes the contents between the tags into the output buffer, either bare (for <code>&lt;% ... %&gt;</code>) or capturing and <code>print</code>ing the output (for <code>&lt;%= ... %&gt;</code>).</p>
+
+<p>The compiler returns an array, with the template-cum-code first, then the encoding of the string passed in. So, for <code>template.erb</code> above, we get:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+</pre></td>
+  <td class="code"><pre><span class="comment"># processing_erb.rb</span>
+compiler = <span class="constant">ERB</span>::<span class="constant">Compiler</span>.new(<span class="predefined-constant">nil</span>)
+code, encoding = compiler.compiler(template)
+
+puts code
+<span class="comment"># =&gt; print &quot;Hello! I am just a regular file, with tags for inserting things.\nThis is one: &quot;</span>
+<span class="comment"># =&gt; ; print(( name ).to_s); print &quot;\nAnd another: &quot;</span>
+<span class="comment"># =&gt; ; print(( statement ).to_s)</span>
+
+puts encoding
+<span class="comment"># =&gt; UTF-8</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>We can see, then, what is needed in terms of data: the two local variables. We could have embedded any sort of variable (i.e., instance, class instance, class, global) and we would have gotten those in the compiled code. Indeed, the <code>ERB::Compiler#compile</code> method <em>does not care</em> what is in there. It does not check if it is valid Ruby when it creates the “code” string.</p>
+
+<p>When we call <code>ERB#result</code> or its alias, <code>ERB#run</code>, the code compile above is executed using <a href="http://ruby-doc.org/core-1.9.3/Kernel.html#method-i-exec"><code>Kernel#exec</code></a>. At this point if there are invalid Ruby statements it will fail, as well as if there are unscoped variables.</p>
+
+<p>The variables themselves are provided by a <a href="http://www.ruby-doc.org/core-1.9.3/Binding.html"><code>Binding</code></a> (or a <a href="http://www.ruby-doc.org/core-1.9.3/Proc.html"><code>Proc</code></a>, though we will ignore that at the moment). So we can run the same template with different bindings, if for instance we wanted to process many different versions of the text (thinking, for instance, of an email template that we want to send to a number of users, say):</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+<a href="#n16" name="n16">16</a>
+<a href="#n17" name="n17">17</a>
+<a href="#n18" name="n18">18</a>
+<a href="#n19" name="n19">19</a>
+<strong><a href="#n20" name="n20">20</a></strong>
+<a href="#n21" name="n21">21</a>
+<a href="#n22" name="n22">22</a>
+<a href="#n23" name="n23">23</a>
+<a href="#n24" name="n24">24</a>
+<a href="#n25" name="n25">25</a>
+<a href="#n26" name="n26">26</a>
+<a href="#n27" name="n27">27</a>
+<a href="#n28" name="n28">28</a>
+</pre></td>
+  <td class="code"><pre><span class="comment"># processing_erb.rb</span>
+puts erb.result(binding) <span class="comment"># use the local binding</span>
+<span class="comment"># =&gt; NameError: undefined local variable or method `name' for main:Object</span>
+<span class="comment"># =&gt; ...</span>
+
+<span class="comment"># create the local variables</span>
+name = <span class="string"><span class="delimiter">&quot;</span><span class="content">Isaac</span><span class="delimiter">&quot;</span></span>
+statement = <span class="string"><span class="delimiter">&quot;</span><span class="content">Yay!</span><span class="delimiter">&quot;</span></span>
+
+puts erb.result(binding)
+<span class="comment"># =&gt; Hello! I am just a regular file, with tags for inserting things.</span>
+<span class="comment"># =&gt;</span>
+<span class="comment"># =&gt; This is one: Isaac</span>
+<span class="comment"># =&gt; And another: Yay!</span>
+
+
+<span class="comment"># get another scope</span>
+<span class="keyword">def</span> <span class="function">test_scope_binding</span>
+  name = <span class="string"><span class="delimiter">&quot;</span><span class="content">Usurper</span><span class="delimiter">&quot;</span></span>
+  statement = <span class="string"><span class="delimiter">&quot;</span><span class="content">Pwned!</span><span class="delimiter">&quot;</span></span>
+  binding
+<span class="keyword">end</span>
+
+puts erb.result(test_scope_binding)
+<span class="comment"># =&gt; Hello! I am just a regular file, with tags for inserting things.</span>
+<span class="comment"># =&gt;</span>
+<span class="comment"># =&gt; This is one: Usurper</span>
+<span class="comment"># =&gt; And another: Pwned!</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>The real functionality comes out when we provide other bindings. Since bindings are just objects, then can be passed around, and stored (though we should be careful, since the encapsulate a local scope, and so can keep objects in memory, unavailable to be garbage collected). We can do something like</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+<a href="#n16" name="n16">16</a>
+<a href="#n17" name="n17">17</a>
+<a href="#n18" name="n18">18</a>
+<a href="#n19" name="n19">19</a>
+<strong><a href="#n20" name="n20">20</a></strong>
+<a href="#n21" name="n21">21</a>
+<a href="#n22" name="n22">22</a>
+<a href="#n23" name="n23">23</a>
+<a href="#n24" name="n24">24</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">def</span> <span class="function">peanut_gallery_1</span>
+  name = <span class="string"><span class="delimiter">&quot;</span><span class="content">Waldorf</span><span class="delimiter">&quot;</span></span>
+  statement = <span class="string"><span class="delimiter">&quot;</span><span class="content">They aren’t half bad.</span><span class="delimiter">&quot;</span></span>
+  binding
+<span class="keyword">end</span>
+
+<span class="keyword">def</span> <span class="function">peanut_gallery_2</span>
+  name = <span class="string"><span class="delimiter">&quot;</span><span class="content">Statler</span><span class="delimiter">&quot;</span></span>
+  statement = <span class="string"><span class="delimiter">&quot;</span><span class="content">Nope, they’re ALL bad!</span><span class="delimiter">&quot;</span></span>
+  binding
+<span class="keyword">end</span>
+
+
+[peanut_gallery_1, peanut_gallery_2].each <span class="keyword">do</span> |muppet|
+  puts erb.result(muppet)
+<span class="keyword">end</span>
+<span class="comment"># =&gt; Hello! I am just a regular file, with tags for inserting things.</span>
+<span class="comment"># =&gt;</span>
+<span class="comment"># =&gt; This is one: Waldorf</span>
+<span class="comment"># =&gt; And another: They aren’t half bad.</span>
+<span class="comment"># =&gt; Hello! I am just a regular file, with tags for inserting things.</span>
+<span class="comment"># =&gt;</span>
+<span class="comment"># =&gt; This is one: Statler</span>
+<span class="comment"># =&gt; And another: Nope, they’re ALL bad!</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>Overall, then, the ERB functionality is fairly simple. Take a template, go through it to make the code that would produce that template, and then run that code in a given context. This is precisely what Rails does with its default views templating system! The context includes all the instance variables in a given controller, which are then available to the view! So:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+</pre></td>
+  <td class="code"><pre><span class="comment"># app/controllers/users_controller.rb</span>
+<span class="keyword">class</span> <span class="class">UsersController</span> &lt; <span class="constant">ApplicationController</span>
+  <span class="keyword">def</span> <span class="function">index</span>
+    <span class="instance-variable">@users</span> = <span class="constant">User</span>.all
+    render <span class="symbol">:index</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment"># app/views/users/index.html.erb</span>
+<span class="constant">All</span> <span class="key">users</span>:
+&lt;<span class="string"><span class="delimiter">% </span><span class="content">@users.each</span><span class="delimiter"> </span></span><span class="keyword">do</span> |user| <span class="string"><span class="delimiter">%&gt;</span><span class="content">
+  &lt;%= user.name %</span><span class="delimiter">&gt;</span></span>&lt;br&gt;
+  &lt;<span class="string"><span class="delimiter">%=</span><span class="content"> user.email %&gt;
+&lt;% end %&gt;
+</span></span></pre></td>
+</tr></table>
+</div>
+
+<p>And we get the output we want: dynamically populated pages! (And alliteration!)</p>
+]]></content>
+  </entry>
+  
+</feed>
