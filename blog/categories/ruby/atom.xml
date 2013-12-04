@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ruby | Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-12-04T08:13:04-08:00</updated>
+  <updated>2013-12-04T08:17:14-08:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -12,6 +12,315 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Singleton Classes]]></title>
+    <link href="http://imurchie.github.io/blog/blog/2013/12/04/singleton/"/>
+    <updated>2013-12-04T08:14:17-08:00</updated>
+    <id>http://imurchie.github.io/blog/blog/2013/12/04/singleton</id>
+    <content type="html"><![CDATA[<p>Exploring metaprogramming in Ruby has been very interesting, and I’ve only begun to scratch the surface. And the central feature in that thin strip is the “singleton class” (not to be confused with the <a href="http://en.wikipedia.org/wiki/Singleton_pattern">Singleton Pattern</a>, which is implemented in Ruby with the <a href="http://ruby-doc.org/stdlib-1.9.3/libdoc/singleton/rdoc/Singleton.html"><code>Singleton</code> module</a>), also known as the “Eigenclass,” “Ghost Class,” “Metaclass” or “Uniclass.”</p>
+
+<!-- more -->
+
+<p>This class is an anonymous class into which methods defined upon an object (i.e., an instance of a class) are defined. Normal methods are defined on a class, which allows for those methods to be shared by every instance of the class (and subclasses):</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">class</span> <span class="class">Test</span>
+  <span class="keyword">def</span> <span class="function">initialize</span>(name = <span class="string"><span class="delimiter">&quot;</span><span class="content">Test</span><span class="delimiter">&quot;</span></span>)
+    <span class="instance-variable">@name</span> = name
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">name</span>
+    <span class="instance-variable">@name</span>.capitalize
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>When this class is instantiated those instances will each have a copy of their instance variables (in this case, <code>@name</code>), but will all share the instance methods, <code>#initialize</code> and <code>#name</code>, living in the <code>Test</code> class.</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+</pre></td>
+  <td class="code"><pre>one = <span class="constant">Test</span>.new(<span class="string"><span class="delimiter">&quot;</span><span class="content">instance one</span><span class="delimiter">&quot;</span></span>)
+two = <span class="constant">Test</span>.new(<span class="string"><span class="delimiter">&quot;</span><span class="content">instance two</span><span class="delimiter">&quot;</span></span>)
+
+puts one.name
+<span class="comment"># =&gt; Instance one</span>
+
+puts two.name
+<span class="comment"># =&gt; Instance two</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>If we reopen the class (monkeypatch it) the method(s) we add will be available to all the instances:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">class</span> <span class="class">Test</span>
+  <span class="keyword">def</span> <span class="function">name_weird</span>
+    <span class="instance-variable">@name</span>.chars.each_with_index.map { |c, i| i.even? ? c : c.swapcase }.join
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+puts one.name_weird
+<span class="comment"># =&gt; iNsTaNcE OnE</span>
+
+puts two.name_weird
+<span class="comment"># =&gt; iNsTaNcE TwO</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>But it is also possible to add a method to a particular instance of the class:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+</pre></td>
+  <td class="code"><pre><span class="keyword">def</span> one.<span class="function">name_one</span>
+  <span class="instance-variable">@name</span>.upcase
+<span class="keyword">end</span>
+
+puts one.name_one
+<span class="comment"># =&gt; INSTANCE ONE</span>
+
+puts two.name_one
+<span class="comment"># =&gt; NoMethodError: undefined method `name_one' for #&lt;Test:... @name=&quot;instance two&quot;&gt;</span>
+<span class="comment"># =&gt; ...</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>Where does this method live? In the Eigenclass! (Side note: I’m going to use “Eigenclass” here, since it obviates the confusion with the Singleton Pattern, despite its sounding somewhat poncy.) The usually anonymous Eigenclass can be gotten relatively easily:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+</pre></td>
+  <td class="code"><pre>eigenclass = <span class="keyword">class</span> &lt;&lt; <span class="class">one</span>
+  <span class="predefined-constant">self</span>
+<span class="keyword">end</span>
+
+puts eigenclass
+<span class="comment"># =&gt; #&lt;Class:#&lt;Test:0x007f93735a7e50&gt;&gt;</span>
+
+puts eigenclass.class
+<span class="comment"># =&gt; Class</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>The methods can then be seen:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+<a href="#n16" name="n16">16</a>
+<a href="#n17" name="n17">17</a>
+<a href="#n18" name="n18">18</a>
+<a href="#n19" name="n19">19</a>
+<strong><a href="#n20" name="n20">20</a></strong>
+<a href="#n21" name="n21">21</a>
+<a href="#n22" name="n22">22</a>
+<a href="#n23" name="n23">23</a>
+<a href="#n24" name="n24">24</a>
+<a href="#n25" name="n25">25</a>
+</pre></td>
+  <td class="code"><pre><span class="comment"># methods on the class</span>
+puts <span class="constant">Test</span>.instance_methods(<span class="predefined-constant">false</span>)
+<span class="comment"># =&gt; [:name]</span>
+
+
+<span class="comment"># first instance</span>
+
+<span class="comment"># methods starting with &quot;name&quot; on this instance (defined on it, or its parents)</span>
+puts one.methods.grep(<span class="regexp"><span class="delimiter">/</span><span class="content">name.*</span><span class="delimiter">/</span></span>)
+<span class="comment"># =&gt; [:name_one, :name]</span>
+
+<span class="comment"># the methods on this particular instance but not parents</span>
+puts one.methods(<span class="predefined-constant">false</span>)
+<span class="comment"># =&gt; [:name_one]</span>
+
+
+<span class="comment"># other instance</span>
+
+<span class="comment"># methods starting with &quot;name&quot; on this instance (defined on it, or its parents)</span>
+puts two.methods.grep(<span class="regexp"><span class="delimiter">/</span><span class="content">name.*</span><span class="delimiter">/</span></span>)
+<span class="comment"># =&gt; [:name_one, :name]</span>
+
+<span class="comment"># methods on the instance itself</span>
+puts two.methods(<span class="predefined-constant">false</span>)
+<span class="comment"># =&gt; []</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>All this is very interesting! And provides much insight into the object model for Ruby. More on this in the future. For the moment, we have an anonymous Eigenclass in which reside methods defined on an instance, providing <em>real</em> privacy (unlike the “privacy” offered by the <code>private</code> and <code>protected</code> methods). We can get the method out of the instance, but we cannot bind it to another object:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+</pre></td>
+  <td class="code"><pre>meth = one.method(<span class="symbol">:name_one</span>)
+meth.unbind
+
+meth.bind(two)
+<span class="comment"># =&gt; TypeError: singleton method called for a different object</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>So the Eigenclass of one object is an entirely different class, even when sharing a class hierarchy. This includes the Eigenclass of two:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+</pre></td>
+  <td class="code"><pre>eigenclass_two = <span class="keyword">class</span> &lt;&lt; <span class="class">two</span>; <span class="predefined-constant">self</span>; <span class="keyword">end</span>
+
+meth.bind(eigenclass_two)
+<span class="comment"># =&gt; TypeError: singleton method called for a different object</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>The final note about the Eigenclass is that, unlike a normal class, it cannot be instantiated:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+</pre></td>
+  <td class="code"><pre>obj = eigenclass.new
+<span class="comment"># =&gt; TypeError: can't create instance of singleton class</span>
+<span class="comment"># =&gt; ...</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>One further note to be made is the primary instance of Eigenclasses and singleton methods in Ruby, one that we use all the time without knowing it: the class method. All classes we define are instance of <a href="http://www.ruby-doc.org/core-1.9.3/Class.html"><code>Class</code></a>, into which we define methods for that particular instance. If we look at how the method was added to the instance of <code>Test</code>, <code>one</code>, we did it by using the instance as the receiver of the method definition:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">def</span> one.<span class="function">name_one</span>
+  <span class="instance-variable">@name</span>.upcase
+<span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>But this is just like the class method definition, which can be done three ways:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+<a href="#n16" name="n16">16</a>
+</pre></td>
+  <td class="code"><pre><span class="comment"># reopen the class</span>
+<span class="keyword">class</span> <span class="class">Test</span>
+  <span class="keyword">def</span> <span class="constant">Test</span>.<span class="function">class_method</span>
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">this is a class method using the class name</span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="predefined-constant">self</span>.<span class="function">other_class_method</span>
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">this is a class method using self</span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">class</span> &lt;&lt; <span class="class">self</span>
+    <span class="keyword">def</span> <span class="function">further_class_method</span>
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">this is a class method directly on the eigenclass</span><span class="delimiter">&quot;</span></span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>We could do all the tests above and it would come out similarly. The class <code>Class</code> is unaffected by these methods. Other classes can’t access them. Absolutely.</p>
+
+<p>Instance methods, on the other hand, I’m still attempting to figure out.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Embedded Ruby and HTML Production]]></title>
@@ -23,6 +332,8 @@
 <p>But seriously.</p>
 
 <p>After generating JSON from our controllers, it feels nice to get to views and the creation of HTML. We’re using Embedded Ruby (ERB) which got me thinking about the technology.</p>
+
+<!-- more -->
 
 <p><a href="http://ruby-doc.org/stdlib-1.9.3/libdoc/erb/rdoc/ERB.html"><code>ERB</code></a> is part of the Ruby standard library, available to whatever programs might want to process templates:</p>
 

@@ -9,7 +9,16 @@
   <meta name="author" content="Isaac Murchie">
 
   
-  <meta name="description" content="“Everyone knows that debugging is twice as hard as writing a program in the first place. So if you’re as clever as you can be when you write it, how &hellip;">
+  <meta name="description" content="The literature says that String#&lt;&lt; is preferable to String#+. Why? One metric is speed. The following Ruby code snippet: 1
+2
+3
+4
+5
+6
+7
+8
+9
+10 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +74,84 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/blog/2013/11/30/string-concatenation/">String Concatenation</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-30T08:08:28-08:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The literature says that <code>String#&lt;&lt;</code> is preferable to <code>String#+</code>. Why? One metric is speed. The following Ruby code snippet:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+</pre></td>
+  <td class="code"><pre><span class="constant">Benchmark</span>.bm <span class="keyword">do</span> |b|
+  b.report(<span class="string"><span class="delimiter">&quot;</span><span class="content">+:  </span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span>
+    string = <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
+    <span class="integer">100_000</span>.times { string += <span class="string"><span class="delimiter">&quot;</span><span class="content">another</span><span class="delimiter">&quot;</span></span> }
+  <span class="keyword">end</span>
+  b.report(<span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;&lt;: </span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span>
+    string = <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
+    <span class="integer">100_000</span>.times { string &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">another</span><span class="delimiter">&quot;</span></span> }
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>Yields the following data:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+</pre></td>
+  <td class="code"><pre>      user       system    total       real
++:    8.960000   2.750000  11.710000 ( 11.735344)
+&lt;&lt;:   0.020000   0.000000   0.020000 (  0.019966)
+</pre></td>
+</tr></table>
+</div>
+
+<p>So it appears that concatenation with the <code>&lt;&lt;</code> method is much faster. (As a side note, <code>String#concat</code> and <code>String#&lt;&lt;</code> are aliases.)</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -267,6 +354,10 @@ To These, I would like to add one idea that is not really mentioned in _Design P
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/blog/2013/12/04/singleton/">Singleton Classes</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/blog/2013/12/04/erb/">Embedded Ruby and HTML Production</a>
       </li>
     
@@ -280,10 +371,6 @@ To These, I would like to add one idea that is not really mentioned in _Design P
     
       <li class="post">
         <a href="/blog/blog/2013/12/02/rspec/">RSpec, `expect` and `should`</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/blog/2013/12/01/interfaces/">Interfaces</a>
       </li>
     
   </ul>
