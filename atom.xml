@@ -4,7 +4,7 @@
   <title><![CDATA[Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-12-04T08:17:14-08:00</updated>
+  <updated>2013-12-05T17:08:26-08:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -12,6 +12,108 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Passwords and Authentication]]></title>
+    <link href="http://imurchie.github.io/blog/blog/2013/12/05/passwords/"/>
+    <updated>2013-12-05T17:07:09-08:00</updated>
+    <id>http://imurchie.github.io/blog/blog/2013/12/05/passwords</id>
+    <content type="html"><![CDATA[<p>My favourite analogy for password hashing is that of mixing paint. The whole analogy, including the problem, goes something like this:</p>
+
+<blockquote>
+  <p>Suppose there are three people, A, B, and C, in a room and two of them, A and B, want to share something that the third, C, should not be privy to. The catch is that they cannot communicate anything that cannot be inspected by C. That is, they can’t pass a note that C cannot look at, they cannot whisper something in each others’ ears that C cannot hear. Everything must be public.</p>
+
+  <p>What they have, though, is an unlimited supply of paints in a myriad of colours. They can also have privacy while creating and deciphering the message passed between them.</p>
+
+  <p>In order for A and B to share a colour which C does not know is for each of them to take a known colour, which B also knows, and in secret add their respective private colours. They then swap these mixed paints with each other, in public. But C has no way of knowing how they were gotten from the origin paint. Then, in secret again, the two mix in their own private paints, at which point A and B have the same colour! And C does not know what it is!</p>
+</blockquote>
+
+<p>The first crucial aspect of this is the fact that mixing paint is a one-way function. It is easy to add a colour to another colour. It is not, however, easy to separate the two colours once they are mixed. The second crucial part is that the results of the operations are independent of the order of their operation. Mixing red and green, and then mixing in blue gives the same colour as mixing red and blue, and then adding green.</p>
+
+<p>It is also worthwhile noting that A does not need to know B’s secret colour, and vice versa. Adding their own to the mix will produce the same colour.</p>
+
+<p>Public key cryptography works in the same way, but with numbers (which is possible since all the things we send via computers is just binary at the core, and binary can <em>always</em> be transformed into a numeric value). The holy grail is a truly one-way function that is independent of order-of-operation. The standard method, though not perfect, is discrete (i.e., modular) exponentiation. That is, taking a series of exponentiation operations over a discrete range. The opposite, dscrete logarithms, is difficult for large numbers.</p>
+
+<p>Password hashing is the same, though it depends on the exact algorithm. We have been using Blowfish, through the standard <code>bcrypt</code> algorithm. The resulting “hash” is effectively obscurred, but redoing the operation will produce the same thing, since the hash includes the starting values (other than the secret word being obscurred, of course!). So:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+</pre></td>
+  <td class="code"><pre><span class="comment"># bcrypt_play.rb</span>
+require <span class="string"><span class="delimiter">&quot;</span><span class="content">bcrypt</span><span class="delimiter">&quot;</span></span>
+
+hash = <span class="constant">BCrypt</span>::<span class="constant">Password</span>.create(<span class="string"><span class="delimiter">&quot;</span><span class="content">my new password!</span><span class="delimiter">&quot;</span></span>)
+puts hash.to_s
+<span class="comment"># =&gt; &quot;$2a$10$3cKki8ot9ZgPM9FDoga17eWR9wyRLkVAkyEW.9scN.Vb8r5DPOOy2&quot;</span>
+
+hash2 = <span class="constant">BCrypt</span>::<span class="constant">Password</span>.create(<span class="string"><span class="delimiter">&quot;</span><span class="content">my new password!</span><span class="delimiter">&quot;</span></span>)
+puts hash2.to_s
+<span class="comment"># =&gt; &quot;$2a$10$XZFwdqyIBO.iv7.eVM.98udi19fNSHj.Enybmo/v5.cJTXy5Y6Gmy&quot;</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>What!?! We’ve produced different values for the hash! How are we going to match a password against its hash? The answer is to create an object from existing hash, which includes the salt and cost for the operation that produced it. The incoming password will then be hashed with the same starting point (the salt) for the same number of times (the cost, more or less):</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+</pre></td>
+  <td class="code"><pre>hash3 = <span class="constant">BCrypt</span>::<span class="constant">Password</span>.new(hash.to_s)
+puts hash3.to_s
+<span class="comment"># =&gt; &quot;$2a$10$3cKki8ot9ZgPM9FDoga17eWR9wyRLkVAkyEW.9scN.Vb8r5DPOOy2&quot;</span>
+
+hash3.is_password?(<span class="string"><span class="delimiter">&quot;</span><span class="content">my new password!</span><span class="delimiter">&quot;</span></span>)
+<span class="comment"># =&gt; true</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>Excellent!</p>
+
+<p>What is the structure of the hash, then? It is, essentially, made of a <em>version</em>, <em>cost</em>, <em>salt</em>, and <em>checksum</em>. <code>BCrypt::Password</code> has a private instance method <code>#split_hash</code> to get access to these. (It takes the hash in, so why is it an instance method and not on the class?). Running it on <code>hash2</code> above:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+</pre></td>
+  <td class="code"><pre>values = hash2.send(<span class="symbol">:split_hash</span>, hash2)
+puts hash2.to_s
+<span class="comment"># =&gt; $2a$10$XZFwdqyIBO.iv7.eVM.98udi19fNSHj.Enybmo/v5.cJTXy5Y6Gmy</span>
+
+puts values
+<span class="comment"># =&gt; 2a                               # version</span>
+<span class="comment"># =&gt; 10                               # cost</span>
+<span class="comment"># =&gt; $2a$10$XZFwdqyIBO.iv7.eVM.98u    # salt</span>
+<span class="comment"># =&gt; di19fNSHj.Enybmo/v5.cJTXy5Y6Gmy  # checksum</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>The whole thing is used to check itself, but the parts are used to produce itself! Holy chicken-and-egg, Batman!</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Singleton Classes]]></title>
