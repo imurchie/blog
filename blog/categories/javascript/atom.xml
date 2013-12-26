@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Javascript | Random Thoughts]]></title>
+  <link href="http://imurchie.github.io/blog/blog/categories/javascript/atom.xml" rel="self"/>
+  <link href="http://imurchie.github.io/blog/"/>
+  <updated>2013-12-26T16:46:17-07:00</updated>
+  <id>http://imurchie.github.io/blog/</id>
+  <author>
+    <name><![CDATA[Isaac Murchie]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[JavaScript Functions and Scoping]]></title>
+    <link href="http://imurchie.github.io/blog/blog/2013/12/26/functions/"/>
+    <updated>2013-12-26T11:05:05-07:00</updated>
+    <id>http://imurchie.github.io/blog/blog/2013/12/26/functions</id>
+    <content type="html"><![CDATA[<h2 id="function-declarations-and-expressions">Function Declarations and Expressions</h2>
+
+<p>I have recently been reading Mark E. Daggett’s excellent <a href="http://www.apress.com/9781430260974"><em>Expert JavaScript</em></a>.
+While I feel relatively comfortable with JavaScript functions in general, the subject
+of declarations versus expressions was somewhat opaque. Some of the complexity is
+driven home by one of his examples:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+<a href="#n15" name="n15">15</a>
+<a href="#n16" name="n16">16</a>
+<a href="#n17" name="n17">17</a>
+<a href="#n18" name="n18">18</a>
+<a href="#n19" name="n19">19</a>
+<strong><a href="#n20" name="n20">20</a></strong>
+<a href="#n21" name="n21">21</a>
+<a href="#n22" name="n22">22</a>
+<a href="#n23" name="n23">23</a>
+<a href="#n24" name="n24">24</a>
+<a href="#n25" name="n25">25</a>
+<a href="#n26" name="n26">26</a>
+<a href="#n27" name="n27">27</a>
+<a href="#n28" name="n28">28</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">var</span> sayHo;
+console.log(<span class="keyword">typeof</span>(sayHey));
+<span class="comment">// =&gt; function</span>
+
+console.log(<span class="keyword">typeof</span>(sayHo));
+<span class="comment">// =&gt; undefined</span>
+
+<span class="keyword">if</span>(<span class="predefined-constant">true</span>) {
+  <span class="keyword">function</span> <span class="function">sayHey</span>() {
+    console.log(<span class="string"><span class="delimiter">&quot;</span><span class="content">hey</span><span class="delimiter">&quot;</span></span>);
+  }
+  <span class="function">sayHo</span> = <span class="keyword">function</span> <span class="function">sayHo</span>() {
+    console.log(<span class="string"><span class="delimiter">&quot;</span><span class="content">ho</span><span class="delimiter">&quot;</span></span>);
+  };
+} <span class="keyword">else</span> {
+  <span class="keyword">function</span> <span class="function">sayHey</span>() {
+    console.log(<span class="string"><span class="delimiter">&quot;</span><span class="content">no</span><span class="delimiter">&quot;</span></span>);
+  }
+  <span class="function">sayHo</span> = <span class="keyword">function</span> <span class="function">sayHo</span>() {
+    console.log(<span class="string"><span class="delimiter">&quot;</span><span class="content">no</span><span class="delimiter">&quot;</span></span>);
+  };
+}
+
+sayHey();
+<span class="comment">// =&gt; no</span>
+
+sayHo();
+<span class="comment">// =&gt; ho</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>This is an attempt to create simple conditional polymorphism: if <code>true</code> is true,
+<code>sayHey()</code> should print “hey”, and <code>sayHo()</code> should print “ho”. Otherwise, both
+ought to print “no”. But we can see that this is not the case. Rather, at the
+time of parsing the function <em>declarations</em> are evaluated and hoisted to the top
+of the block.</p>
+
+<p>This means that the <code>typeof</code> the function <code>sayHey</code>, which is <em>declared</em>, is
+<code>function</code>, as we would expect.</p>
+
+<p>But it also means that both the declarations have been evaluated during parsing,
+leading to the one declared later, in the <code>else</code> block, overriding the earlier one,
+without the conditional statement ever being run. Thus when we actually call the
+function <code>sayHey</code> it is the second version, printing “no”!</p>
+
+<p>On the other hand, function <em>expressions</em> are evaluated at runtime, so the function
+refers to something only when the code is run, and we get the version in the
+proper part of the conditional statement, printing “ho”.</p>
+
+<p>But when we try the <code>typeof</code> operator, the function is not yet defined, since the
+code defining it has not run! Thus we get <code>undefined</code>.</p>
+
+<p>The two ways of defining a function thus end up working in exactly opposite ways
+from each other.</p>
+
+<h2 id="scope">Scope</h2>
+
+<p>This behaviour relies on the fact that JavaScript does not have any true block scope.
+The scope gates within JavaScript are <em>functions</em>, not <em>blocks</em>. Thus while in
+a language like C variables declared within a block are locally scoped:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+</pre></td>
+  <td class="code"><pre><span class="keyword">if</span>(<span class="integer">1</span>) {
+  <span class="predefined-type">int</span> local = <span class="integer">42</span>;
+  printf(<span class="string"><span class="delimiter">&quot;</span><span class="content">%d</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>, local);
+}
+
+printf(<span class="string"><span class="delimiter">&quot;</span><span class="content">%d</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>, local);
+</pre></td>
+</tr></table>
+</div>
+
+<p>Here the second <code>printf</code> statement will cause a compiler error (<code>use of undeclared
+identifier 'local'</code>) because <code>local</code> is only in scope within the conditional block.
+The same would be true in any block.</p>
+
+<p>In JavaScript, however, non-function blocks are not scope gates. Variables, including
+functions, are <em>hoisted</em> to the beginning of the function in which they are declared,
+at parse time. They are, like <code>sayHo</code> above, undefined until they are defined,
+unless they are functions and defined <em>declaration</em> style, in which case the
+definition is hoisted as well as the declaration. If there are multiple declarations
+of the same named function, the last one will clobber the earlier ones!</p>
+
+<h2 id="caveat">Caveat</h2>
+
+<p>It should be mentioned that this all depends on lax implementations of the ECMAScript
+standard. Strictly speaking a function <em>declaration</em> cannot exist inside a block.
+<code>Block</code>s can only include <code>Statement</code>s, not <code>SourceElement</code>s, and function declarations
+are <code>SourceElement</code>s. In a fully compliant interpreter we would get a <code>SyntaxError</code>.</p>
+
+<p>The behaviour noted above, taken from <a href="http://nodejs.org/">Node.js</a>, is non-standard
+and cannot be relied upon to occur across systems. To adhere to the standard and
+make sure our code is robust and reproducible, we should only use the function
+<em>expression</em> syntax within blocks.</p>
+]]></content>
+  </entry>
+  
+</feed>

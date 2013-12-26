@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Html | Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/blog/categories/html/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-12-05T17:09:53-08:00</updated>
+  <updated>2013-12-26T16:46:17-07:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Embedded Ruby and HTML Production]]></title>
     <link href="http://imurchie.github.io/blog/blog/2013/12/04/erb/"/>
-    <updated>2013-12-04T08:10:18-08:00</updated>
+    <updated>2013-12-04T09:10:18-07:00</updated>
     <id>http://imurchie.github.io/blog/blog/2013/12/04/erb</id>
     <content type="html"><![CDATA[<p>The funny thing about creating basic html forms and tables is that it makes the internet seem like it is 1997. After we stopped using Lynx or the command-line Mozilla, but before stylesheets gained acceptance. All we need is some animated gifs and multicolored text to induce our Geocities nightmares.</p>
 

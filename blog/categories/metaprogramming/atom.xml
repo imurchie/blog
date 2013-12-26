@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Metaprogramming | Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/blog/categories/metaprogramming/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-12-05T17:09:53-08:00</updated>
+  <updated>2013-12-26T16:46:17-07:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Singleton Classes]]></title>
     <link href="http://imurchie.github.io/blog/blog/2013/12/04/singleton/"/>
-    <updated>2013-12-04T08:14:17-08:00</updated>
+    <updated>2013-12-04T09:14:17-07:00</updated>
     <id>http://imurchie.github.io/blog/blog/2013/12/04/singleton</id>
     <content type="html"><![CDATA[<p>Exploring metaprogramming in Ruby has been very interesting, and I’ve only begun to scratch the surface. And the central feature in that thin strip is the “singleton class” (not to be confused with the <a href="http://en.wikipedia.org/wiki/Singleton_pattern">Singleton Pattern</a>, which is implemented in Ruby with the <a href="http://ruby-doc.org/stdlib-1.9.3/libdoc/singleton/rdoc/Singleton.html"><code>Singleton</code> module</a>), also known as the “Eigenclass,” “Ghost Class,” “Metaclass” or “Uniclass.”</p>
 

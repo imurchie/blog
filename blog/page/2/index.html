@@ -9,7 +9,7 @@
   <meta name="author" content="Isaac Murchie">
 
   
-  <meta name="description" content="Ruby has a number of ways to create callable bits of code: blocks, procs, lambdas, and methods. ">
+  <meta name="description" content="While pairing with people it has been a surprise that it is not generally known that Ruby will decompose subarrays when passing parameters in &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +71,197 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/blog/2013/12/01/iterators/">Iterators and Parameter-passing</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-01T14:06:59-07:00" pubdate data-updated="true">Dec 1<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>While pairing with people it has been a surprise that it is not generally known that Ruby will decompose subarrays when passing parameters in iterators. That is, for instance, when modelling the movement of a rook in chess, we could have the code:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+</pre></td>
+  <td class="code"><pre><span class="comment"># offsets from the initial position, (x, y)</span>
+offsets = [[<span class="integer">0</span>, <span class="integer">1</span>], [<span class="integer">1</span>, <span class="integer">1</span>], [<span class="integer">0</span>, <span class="integer">-1</span>], [<span class="integer">-1</span>, <span class="integer">-1</span>]]
+offsets.each <span class="keyword">do</span> |offset|
+  offset_x = offset[<span class="integer">0</span>]
+  offset_y = offset[<span class="integer">1</span>]
+  new_x, new_y = x + offset_x, y + offset_y
+
+  <span class="comment"># ...</span>
+<span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/blog/2013/12/01/iterators/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/blog/2013/11/30/idioms/">Idioms and Habits</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-30T12:35:00-07:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I am slowly to have in mind Ruby idioms for things that I would initially turn to manual techniques. The first that comes to mind is iterating over an array and a sub-array one shorter. How I would have done it:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+</pre></td>
+  <td class="code"><pre>array = [<span class="integer">1</span>, <span class="integer">2</span>, <span class="integer">3</span>, <span class="integer">4</span>, <span class="integer">5</span>, <span class="integer">6</span>]
+
+i = <span class="integer">0</span>
+array.each <span class="keyword">do</span> |el|
+  j = i + <span class="integer">1</span>
+  <span class="keyword">while</span> j &lt; array.length
+    <span class="comment"># process el (or array[i]) and array[j]</span>
+
+    j += <span class="integer">1</span>
+  <span class="keyword">end</span>
+
+  i += <span class="integer">1</span>
+<span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>Which basically Ruby-ifies a C-style for-loop implementation</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+</pre></td>
+  <td class="code"><pre>for(int i=0; i&lt;array.length; i++)
+  for(int j=i+1; j&lt;array.length; j++)
+    # process array[i] and array[j]
+  end
+end
+</pre></td>
+</tr></table>
+</div>
+
+<p>However, Ruby can do this in a much better way, using <code lang="ruby">Array</code> and <code lang="ruby">Fixnum</code> methods:</p>
+
+<div><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre><a href="#n1" name="n1">1</a>
+<a href="#n2" name="n2">2</a>
+<a href="#n3" name="n3">3</a>
+<a href="#n4" name="n4">4</a>
+<a href="#n5" name="n5">5</a>
+<a href="#n6" name="n6">6</a>
+<a href="#n7" name="n7">7</a>
+<a href="#n8" name="n8">8</a>
+<a href="#n9" name="n9">9</a>
+<strong><a href="#n10" name="n10">10</a></strong>
+<a href="#n11" name="n11">11</a>
+<a href="#n12" name="n12">12</a>
+<a href="#n13" name="n13">13</a>
+<a href="#n14" name="n14">14</a>
+</pre></td>
+  <td class="code"><pre><span class="comment"># using array indices so both sides are alike</span>
+<span class="comment"># and the C implementation is better mirrored</span>
+array.times <span class="keyword">do</span> |i|
+  (i+<span class="integer">1</span>...array.length).times <span class="keyword">do</span> |j|
+    <span class="comment"># process array[i] and array[j]</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment"># or with an Arrray method</span>
+array.each_with_index <span class="keyword">do</span> |el, i|
+  (i+<span class="integer">1</span>...array.length).times <span class="keyword">do</span> |j|
+    <span class="comment"># process el and array[j]</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre></td>
+</tr></table>
+</div>
+
+<p>The benefit of the last two Ruby implementations is that the programmer no longer needs to keep track of the indices. We are, as developers, left with making the logic of the data processing rather than the machinery of iterating over it.</p>
+
+<p>While I knew the methods, until recently they hadn’t been in the fore of my mind when I arrive at a problem needing solving. I’m sure there are many more that will eventually percolate up so that they are the go-to implementations.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/blog/2013/11/30/block/">Blocks, Procs, Lambdas, Methods</a></h1>
     
     
@@ -87,7 +278,7 @@
   
 
 
-<time datetime="2013-11-30T08:14:45-08:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
+<time datetime="2013-11-30T09:14:45-07:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
         
       </p>
     
@@ -128,7 +319,7 @@
   
 
 
-<time datetime="2013-11-30T08:08:28-08:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
+<time datetime="2013-11-30T09:08:28-07:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
         
       </p>
     
@@ -206,7 +397,7 @@
   
 
 
-<time datetime="2013-11-30T08:01:53-08:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
+<time datetime="2013-11-30T09:01:53-07:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
         
       </p>
     
@@ -246,7 +437,7 @@
   
 
 
-<time datetime="2013-11-29T09:00:43-08:00" pubdate data-updated="true">Nov 29<span>th</span>, 2013</time>
+<time datetime="2013-11-29T10:00:43-07:00" pubdate data-updated="true">Nov 29<span>th</span>, 2013</time>
         
       </p>
     
@@ -291,7 +482,7 @@
   
 
 
-<time datetime="2013-11-29T09:00:15-08:00" pubdate data-updated="true">Nov 29<span>th</span>, 2013</time>
+<time datetime="2013-11-29T10:00:15-07:00" pubdate data-updated="true">Nov 29<span>th</span>, 2013</time>
         
       </p>
     
@@ -342,7 +533,7 @@ To These, I would like to add one idea that is not really mentioned in _Design P
   
 
 
-<time datetime="2013-11-28T21:34:40-08:00" pubdate data-updated="true">Nov 28<span>th</span>, 2013</time>
+<time datetime="2013-11-28T22:34:40-07:00" pubdate data-updated="true">Nov 28<span>th</span>, 2013</time>
         
       </p>
     
@@ -386,6 +577,14 @@ To These, I would like to add one idea that is not really mentioned in _Design P
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/blog/2013/12/26/functions/">JavaScript Functions and Scoping</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/blog/2013/12/18/named/">Anonymous and Named Functions</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/blog/2013/12/05/passwords/">Passwords and Authentication</a>
       </li>
     
@@ -395,14 +594,6 @@ To These, I would like to add one idea that is not really mentioned in _Design P
     
       <li class="post">
         <a href="/blog/blog/2013/12/04/erb/">Embedded Ruby and HTML Production</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/blog/2013/12/03/methods/">Method Lookup in Ruby</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/blog/2013/12/02/design/">In a Small Application&#8230;</a>
       </li>
     
   </ul>

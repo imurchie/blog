@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ruby | Random Thoughts]]></title>
   <link href="http://imurchie.github.io/blog/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://imurchie.github.io/blog/"/>
-  <updated>2013-12-05T17:09:53-08:00</updated>
+  <updated>2013-12-26T16:46:17-07:00</updated>
   <id>http://imurchie.github.io/blog/</id>
   <author>
     <name><![CDATA[Isaac Murchie]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Passwords and Authentication]]></title>
     <link href="http://imurchie.github.io/blog/blog/2013/12/05/passwords/"/>
-    <updated>2013-12-05T17:07:09-08:00</updated>
+    <updated>2013-12-05T18:07:09-07:00</updated>
     <id>http://imurchie.github.io/blog/blog/2013/12/05/passwords</id>
     <content type="html"><![CDATA[<p>My favourite analogy for password hashing is that of mixing paint. The whole analogy, including the problem, goes something like this:</p>
 
@@ -120,7 +120,7 @@ puts values
   <entry>
     <title type="html"><![CDATA[Singleton Classes]]></title>
     <link href="http://imurchie.github.io/blog/blog/2013/12/04/singleton/"/>
-    <updated>2013-12-04T08:14:17-08:00</updated>
+    <updated>2013-12-04T09:14:17-07:00</updated>
     <id>http://imurchie.github.io/blog/blog/2013/12/04/singleton</id>
     <content type="html"><![CDATA[<p>Exploring metaprogramming in Ruby has been very interesting, and I’ve only begun to scratch the surface. And the central feature in that thin strip is the “singleton class” (not to be confused with the <a href="http://en.wikipedia.org/wiki/Singleton_pattern">Singleton Pattern</a>, which is implemented in Ruby with the <a href="http://ruby-doc.org/stdlib-1.9.3/libdoc/singleton/rdoc/Singleton.html"><code>Singleton</code> module</a>), also known as the “Eigenclass,” “Ghost Class,” “Metaclass” or “Uniclass.”</p>
 
@@ -429,7 +429,7 @@ meth.bind(eigenclass_two)
   <entry>
     <title type="html"><![CDATA[Embedded Ruby and HTML Production]]></title>
     <link href="http://imurchie.github.io/blog/blog/2013/12/04/erb/"/>
-    <updated>2013-12-04T08:10:18-08:00</updated>
+    <updated>2013-12-04T09:10:18-07:00</updated>
     <id>http://imurchie.github.io/blog/blog/2013/12/04/erb</id>
     <content type="html"><![CDATA[<p>The funny thing about creating basic html forms and tables is that it makes the internet seem like it is 1997. After we stopped using Lynx or the command-line Mozilla, but before stylesheets gained acceptance. All we need is some animated gifs and multicolored text to induce our Geocities nightmares.</p>
 
@@ -698,7 +698,7 @@ puts erb.result(test_scope_binding)
   <entry>
     <title type="html"><![CDATA[Method Lookup in Ruby]]></title>
     <link href="http://imurchie.github.io/blog/blog/2013/12/03/methods/"/>
-    <updated>2013-12-03T09:03:18-08:00</updated>
+    <updated>2013-12-03T10:03:18-07:00</updated>
     <id>http://imurchie.github.io/blog/blog/2013/12/03/methods</id>
     <content type="html"><![CDATA[<p>When a message is sent to an object it needs to be interpretted. If sent without an explicit receiver, Ruby first looks for a variable in scope with that name. Then it moves to the current object (what is currently pointed to by <code>self</code>) and looks for a method:</p>
 
